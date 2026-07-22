@@ -2,7 +2,7 @@
   "name": "OUXE Distribuidor",
   "short_name": "OUXE",
   "description": "Produtos naturais, cosméticos e alimentos",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F0F3E9",
@@ -20,5 +20,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "id": "./"
 }

@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>OUXE Distribuidor</title>
 <meta name="theme-color" content="#2e7d32">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png">
 <meta name="description" content="OUXE Distribuidor - Produtos naturais, cosméticos e alimentos">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -227,7 +233,6 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
 
 
 </style>
-<link rel="manifest" href="./manifest.json">
 </head>
 <body>
 
@@ -352,9 +357,7 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <div id="backupStorageInfo" style="font-size:12px;color:#999;margin-bottom:12px;"></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
                 <button class="btn-primary" onclick="exportBackup()" style="flex:1;">⬇️ Exportar backup (.json)</button>
-                <button class="btn-primary" onclick="exportProdutosJson()" style="flex:1;background:#1E4630;">⬆️ Gerar produtos.json p/ GitHub</button>
             </div>
-            <p style="font-size:11px;color:#666;margin-bottom:12px;">Para não sumir em outro celular: após adicionar produtos, clique em <b>Gerar produtos.json</b>, depois faça upload/commit desse arquivo na raiz do seu repositório GitHub (junto do index.html). Aí todos os dispositivos vão carregar o mesmo catálogo.</p>
             <div class="form-group">
                 <label>Restaurar backup</label>
                 <input type="file" id="backupFile" accept="application/json">
@@ -641,10 +644,6 @@ function setQtyManual(idx, val) {
 }
 
 // ===== EFEITOS VISUAIS =====
-let deferredPrompt;
-function isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
 function playCashSound() {
     try {
         const audio = document.getElementById('cashSound');
@@ -687,25 +686,14 @@ try { if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynt
 window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; });
 function handleInstallClick(){
     const btn=document.getElementById('navInstallBtn');
-    if (deferredPrompt){
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choice)=>{
-            console.log('Install choice:', choice.outcome);
-            deferredPrompt=null;
-            if(btn && isStandalone()) btn.style.display='none';
-        });
-    } else {
-        const ua=navigator.userAgent;
-        let msg='';
-        if(/iPhone|iPad|iPod/i.test(ua)) {
-            msg='No iPhone: Toque no botão Compartilhar ⤴️ (no Safari) e depois em <b>Adicionar à Tela de Início</b>.';
-        } else if(/Android/i.test(ua)) {
-            msg='No Android: Toque no menu ⋮ do Chrome e selecione <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>. Se não aparecer, você já pode estar no modo instalado ou precisa acessar via HTTPS.';
-        } else {
-            msg='No computador: Clique no ícone de instalação na barra de endereço (🔧 ou 💻) ou no menu ⋮ > <b>Instalar OUXE Distribuidor</b>. Certifique-se que está em HTTPS e que o arquivo manifest.json e sw.js estão na mesma pasta.';
-        }
+    if (deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; if(btn && isStandalone()) btn.style.display='none'; }); }
+    else {
+        const ua=navigator.userAgent; let msg='';
+        if(/iPhone|iPad|iPod/i.test(ua)) msg='Toque no botão Compartilhar ⤴️ e depois em Adicionar à Tela de Início';
+        else if(/Android/i.test(ua)) msg='Toque no menu ⋮ e selecione Instalar app';
+        else msg='Clique no ícone de instalação na barra de endereço';
         const inst = document.getElementById('installInstructions');
-        if (inst) inst.innerHTML = msg + '<br><br><small style="color:#999">Dica: No GitHub Pages, o botão só funciona depois que você fizer commit dos arquivos manifest.json, sw.js e icon-*.png na raiz do repositório.</small>';
+        if (inst) inst.textContent = msg;
         document.getElementById('installModal')?.classList.add('active');
     }
 }
@@ -996,25 +984,6 @@ function renderBackupInfo() {
         el.textContent = `${products.length} produtos salvos • uso aproximado: ${kb} KB`;
     } catch (e) {
         el.textContent = `${products.length} produtos salvos`;
-    }
-}
-
-function exportProdutosJson() {
-    try {
-        // Exporta apenas produtos sem imagens base64 para não ficar gigante (GitHub)
-        const paraGitHub = products.map(p => ({name: p.name, price: p.price, category: p.category, image: ''}));
-        const blob = new Blob([JSON.stringify(paraGitHub, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'produtos.json';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showToast('⬆️ produtos.json gerado! Faça commit no GitHub');
-    } catch(e) {
-        showToast('❌ Erro ao gerar produtos.json');
     }
 }
 
@@ -1400,71 +1369,231 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// ===== BANCO DE DADOS GITHUB - produtos.json =====
-async function loadProductsFromGitHub() {
-    try {
-        // Tenta buscar do GitHub (produtos.json) com cache-bust
-        const res = await fetch('./produtos.json?v=' + Date.now(), {cache: 'no-store'});
-        if (!res.ok) throw new Error('produtos.json não encontrado');
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-            console.log('📦 Produtos carregados do GitHub:', data.length);
-            // Mescla imagens locais se existirem
-            if (storedProducts && storedProducts.length > 0) {
-                const localMap = new Map(storedProducts.map(p => [p.name, p.image]));
-                data.forEach(p => {
-                    const img = localMap.get(p.name);
-                    if (img) p.image = img;
-                });
-            }
-            return cloneProducts(data);
-        }
-    } catch(e) {
-        console.log('Usando produtos locais, GitHub não encontrado:', e.message);
-    }
-    return null;
+// ===== PWA INSTALL - CORRIGIDO v9 - NOTEBOOK, TABLET, ANDROID, IOS =====
+let deferredPrompt = null;
+let pwaInstallReady = false;
+
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true || window.matchMedia('(display-mode: minimal-ui)').matches;
+}
+function isIOS() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isAndroid() {
+    return /Android/i.test(navigator.userAgent);
 }
 
-// ===== PWA INSTALL - REGISTRO CORRETO PARA GITHUB PAGES =====
+// Captura evento de instalação
+window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('✅ PWA instalável!');
+    e.preventDefault();
+    deferredPrompt = e;
+    pwaInstallReady = true;
+    const btn = document.getElementById('navInstallBtn');
+    if (btn) {
+        btn.style.display = 'inline-flex';
+        btn.classList.add('show');
+    }
+});
+
+function handleInstallClick(){
+    const btn = document.getElementById('navInstallBtn');
+    const modal = document.getElementById('installModal');
+    const inst = document.getElementById('installInstructions');
+    
+    if (isStandalone()) {
+        showToast('✅ App já instalado!');
+        if (btn) btn.style.display = 'none';
+        return;
+    }
+    
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            console.log('Escolha:', choiceResult.outcome);
+            if (choiceResult.outcome === 'accepted') {
+                showToast('✅ Instalando app...');
+            }
+            deferredPrompt = null;
+            pwaInstallReady = false;
+        });
+        return;
+    }
+    
+    if (isIOS()) {
+        if (inst) {
+            inst.innerHTML = `
+                <div style="text-align:left; line-height:1.6;">
+                    <p style="margin-bottom:12px; font-weight:600;">📱 iPhone/iPad:</p>
+                    <p>1️⃣ Toque em Compartilhar ⤴️ no Safari</p>
+                    <p>2️⃣ Toque em <b>Adicionar à Tela de Início</b> ➕</p>
+                    <p>3️⃣ Toque em <b>Adicionar</b></p>
+                    <p style="font-size:12px; color:#666; background:#f5f5f5; padding:8px; border-radius:8px; margin-top:8px;">Use Safari, não Chrome</p>
+                </div>
+            `;
+        }
+        if (modal) modal.classList.add('active');
+        return;
+    }
+    
+    if (isAndroid()) {
+        if (inst) {
+            inst.innerHTML = `
+                <div style="text-align:left; line-height:1.6;">
+                    <p style="margin-bottom:12px; font-weight:600;">📱 Android:</p>
+                    <p>1️⃣ Menu ⋮ no Chrome</p>
+                    <p>2️⃣ <b>Instalar app</b></p>
+                    <p style="font-size:12px; color:#666; background:#f5f5f5; padding:8px; border-radius:8px; margin-top:8px;">Precisa HTTPS e manifest.json + sw.js na mesma pasta</p>
+                </div>
+            `;
+        }
+        if (modal) modal.classList.add('active');
+        return;
+    }
+    
+    if (inst) {
+        inst.innerHTML = `
+            <div style="text-align:left; line-height:1.6;">
+                <p style="margin-bottom:12px; font-weight:600;">💻 Notebook/Desktop:</p>
+                <p>Chrome: ícone 💻⬇️ na barra de endereço ou menu ⋮ > Instalar</p>
+                <p style="font-size:12px; color:#666; background:#f5f5f5; padding:8px; border-radius:8px; margin-top:8px;">Requer manifest.json, sw.js, icon-192.png, icon-512.png na mesma pasta</p>
+            </div>
+        `;
+    }
+    if (modal) modal.classList.add('active');
+}
+
+function closeInstallModal(){
+    const modal = document.getElementById('installModal');
+    if (modal) modal.classList.remove('active');
+}
+
+window.addEventListener('appinstalled', () => {
+    console.log('✅ PWA instalado!');
+    const btn = document.getElementById('navInstallBtn');
+    if (btn) btn.style.display = 'none';
+    deferredPrompt = null;
+    pwaInstallReady = false;
+    showToast('✅ App instalado!');
+    closeInstallModal();
+});
+
+// Registra SW REAL (não blob) - ESSENCIAL
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // Registra o sw.js REAL (não blob) - necessário para o botão Instalar funcionar
+        // Primeiro desregistra SWs antigos em blob
+        navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => {
+                if (reg.active && reg.active.scriptURL.startsWith('blob:')) {
+                    console.log('Removendo SW blob antigo', reg.scope);
+                    reg.unregister();
+                }
+            });
+        });
+        
+        // Registra SW real
         navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('✅ SW registrado:', reg.scope))
-            .catch(err => console.log('SW falhou, tentando blob:', err));
+            .then(reg => {
+                console.log('✅ SW registrado:', reg.scope);
+                // Força atualização
+                reg.update();
+            })
+            .catch(err => {
+                console.error('❌ SW falhou:', err);
+                // Tenta com escopo relativo
+                navigator.serviceWorker.register('./sw.js', {scope: './'})
+                    .then(r => console.log('✅ SW com scope ./', r.scope))
+                    .catch(e => console.error('SW falhou mesmo com scope', e));
+            });
     });
 }
 
-// ===== INICIALIZAÇÃO COM BANCO GITHUB =====
-(async function initApp(){
-    // 1. Tenta carregar do GitHub primeiro (produtos.json)
-    const githubProducts = await loadProductsFromGitHub();
-    if (githubProducts && githubProducts.length > 0) {
-        // Se GitHub tem mais produtos que local, usa GitHub
-        // Se local tem imagens, já mesclamos acima
-        if (!storedProducts || githubProducts.length >= storedProducts.length) {
-            products = githubProducts;
-            try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('navInstallBtn');
+    if (btn) {
+        if (isStandalone()) {
+            btn.style.display = 'none';
+        } else {
+            setTimeout(() => {
+                if (!isStandalone()) btn.style.display = 'inline-flex';
+            }, 1000);
         }
     }
-    
-    // 2. Garante que produtos existem
-    if (!products || !Array.isArray(products) || products.length === 0) {
-        products = cloneProducts(DEFAULT_PRODUCTS);
-        try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
+    const modal = document.getElementById('installModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeInstallModal();
+        });
     }
-    if(typeof renderEmpresaHeader==='function') {
-        try { renderEmpresaHeader(); } catch(e){}
+});
+
+
+// ===== INICIALIZAÇÃO - PRODUTOS SEMPRE APARECEM =====
+(function initApp(){
+    try {
+        // Limpa cache ruim se existir
+        const badCache = localStorage.getItem('ouxe-products');
+        if (badCache) {
+            try {
+                const parsed = JSON.parse(badCache);
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    console.log('Cache vazio/corrompido, restaurando padrão');
+                    localStorage.removeItem('ouxe-products');
+                    storedProducts = null;
+                }
+            } catch(e) {
+                localStorage.removeItem('ouxe-products');
+                storedProducts = null;
+            }
+        }
+        
+        // Garante que produtos existem
+        if (!products || !Array.isArray(products) || products.length === 0) {
+            console.log('Produtos vazios, restaurando DEFAULT');
+            products = cloneProducts(DEFAULT_PRODUCTS);
+            try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
+        }
+        
+        console.log(`✅ Iniciando com ${products.length} produtos`);
+        
+        if(typeof renderEmpresaHeader==='function') {
+            try { renderEmpresaHeader(); } catch(e){ console.error(e); }
+        }
+        
+        // Força render mesmo se elementos não existirem ainda
+        setTimeout(() => {
+            try {
+                renderCategories();
+                renderProducts();
+                updateCartBadge();
+                console.log('✅ Produtos renderizados:', document.getElementById('productsGrid')?.children.length);
+            } catch(e) {
+                console.error('Erro ao renderizar:', e);
+            }
+        }, 100);
+        
+        renderCategories();
+        renderProducts();
+        updateCartBadge();
+        
+        if (isStandalone()) {
+            const btn = document.getElementById('navInstallBtn');
+            if (btn) btn.style.display = 'none';
+        }
+    } catch(e) {
+        console.error('Erro crítico initApp:', e);
+        // Fallback extremo - mostra produtos mesmo com erro
+        try {
+            products = cloneProducts(DEFAULT_PRODUCTS);
+            const grid = document.getElementById('productsGrid');
+            if (grid) {
+                grid.innerHTML = '<p style="padding:20px; color:red;">Erro ao carregar, restaurando... Recarregue a página</p>';
+                setTimeout(()=>{ renderProducts(); }, 500);
+            }
+        } catch(e2){}
     }
-    renderCategories();
-    renderProducts();
-    updateCartBadge();
-    if (isStandalone()) {
-        const btn = document.getElementById('navInstallBtn');
-        if (btn) btn.style.display = 'none';
-    }
-    console.log('✅ OUXE Distribuidor inicializado com', products.length, 'produtos (GitHub OK)');
 })();
+
 
 </script>
 </body>
