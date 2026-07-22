@@ -93,8 +93,11 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
 .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
 
 /* ===== Cartão de produto ===== */
-.product-card { background: var(--card); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid rgba(30,70,48,.05); transition: transform .18s ease, box-shadow .18s ease; display: flex; flex-direction: column; }
+.product-card { background: var(--card); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid rgba(30,70,48,.05); transition: transform .18s ease, box-shadow .18s ease; display: flex; flex-direction: column; animation: cardIn .38s cubic-bezier(.2,.8,.3,1.1) both; }
 .product-card:hover { transform: translateY(-4px); box-shadow: 0 4px 8px rgba(30,55,40,.08), 0 16px 28px -12px rgba(30,55,40,.28); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.cart-badge.pulse { animation: badgePulse .45s ease; }
+@keyframes badgePulse { 0%{ transform: scale(1); } 40%{ transform: scale(1.35); } 70%{ transform: scale(.9); } 100%{ transform: scale(1); } }
 .product-img { width: 100%; height: 140px; background: linear-gradient(180deg, #FAFBF6, #F2F5EC); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #C4CEC0; overflow: hidden; }
 .product-img img { width: 100%; height: 100%; object-fit: contain; object-position: center center; background: #ffffff; padding: 8px; }
 .logo-icon img { width:100%; height:100%; object-fit:cover; border-radius:13px; }
@@ -184,7 +187,7 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
     animation: promoMotion 0.7s infinite ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-    .promo-btn-text, .add-btn.just-added, .product-card, .modal-box, #toast { animation: none !important; transition: none !important; }
+    .promo-btn-text, .add-btn.just-added, .product-card, .modal-box, #toast, .cart-badge.pulse { animation: none !important; transition: none !important; }
 }
 
 @media (max-width: 480px) { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } .product-img { height: 120px; } .logo h1 { font-size: 15.5px; } }
@@ -602,7 +605,7 @@ function renderProducts() {
         return;
     }
 
-    filtered.forEach((p) => {
+    filtered.forEach((p, visualIdx) => {
         const realIdx = products.indexOf(p);
         if (quantities[realIdx] === undefined) quantities[realIdx] = 0;
         if (quantities[realIdx] > 9999) quantities[realIdx] = 9999;
@@ -611,6 +614,7 @@ function renderProducts() {
         const imgHtml = p.image ? `<img src="${safeImage}" alt="${safeName}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='📦';">` : '📦';
         const card = document.createElement('div');
         card.className = 'product-card';
+        card.style.animationDelay = (Math.min(visualIdx, 20) * 18) + 'ms';
         card.innerHTML = `
             <div class="product-img">${imgHtml}</div>
             <div class="product-info">
@@ -683,23 +687,8 @@ function speakObrigadoMilionario() {
     } catch(e){}
 }
 try { if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices(); } } catch(e){}
-window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; });
-function handleInstallClick(){
-    const btn=document.getElementById('navInstallBtn');
-    if (deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; if(btn && isStandalone()) btn.style.display='none'; }); }
-    else {
-        const ua=navigator.userAgent; let msg='';
-        if(/iPhone|iPad|iPod/i.test(ua)) msg='Toque no botão Compartilhar ⤴️ e depois em Adicionar à Tela de Início';
-        else if(/Android/i.test(ua)) msg='Toque no menu ⋮ e selecione Instalar app';
-        else msg='Clique no ícone de instalação na barra de endereço';
-        const inst = document.getElementById('installInstructions');
-        if (inst) inst.textContent = msg;
-        document.getElementById('installModal')?.classList.add('active');
-    }
-}
+// Liga o botão de instalar à função definitiva (definida mais abaixo, junto do resto da lógica PWA)
 document.addEventListener('DOMContentLoaded', ()=>{ const btn=document.getElementById('navInstallBtn'); if(btn) btn.addEventListener('click', handleInstallClick); });
-window.addEventListener('appinstalled', ()=>{ const btn=document.getElementById('navInstallBtn'); if(btn) btn.style.display='none'; deferredPrompt=null; showToast('✅ App instalado!'); });
-function closeInstallModal(){ document.getElementById('installModal')?.classList.remove('active'); }
 
 function addToCart(idx) {
     const p = products[idx];
@@ -730,7 +719,14 @@ function addToCart(idx) {
 function updateCartBadge() {
     const total = cart.reduce((s, c) => s + (c.qty||0), 0);
     const badge = document.getElementById('cartBadge');
-    if (badge) badge.textContent = total;
+    if (!badge) return;
+    const prev = badge.textContent;
+    badge.textContent = total;
+    if (String(total) !== prev) {
+        badge.classList.remove('pulse');
+        void badge.offsetWidth;
+        badge.classList.add('pulse');
+    }
 }
 
 // ===== CARRINHO =====

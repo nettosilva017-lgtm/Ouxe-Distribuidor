@@ -1,8 +1,7 @@
-const CACHE_NAME = 'ouxe-v9-fixed-produtos';
+const CACHE_NAME = 'ouxe-v10-polido';
 const ASSETS = [
   './',
   './index.html',
-  './Meta.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
@@ -54,7 +53,7 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           return caches.match(request).then(cached => {
             if (cached) return cached;
-            return caches.match('./index.html') || caches.match('./Meta.html') || caches.match('./');
+            return caches.match('./index.html').then(fallback => fallback || caches.match('./'));
           });
         })
     );
