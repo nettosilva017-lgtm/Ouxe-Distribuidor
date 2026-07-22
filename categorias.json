@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Alimentos",
+    "slug": "alimentos",
+    "total": 2
+  },
+  {
+    "id": 2,
+    "name": "Cosméticos",
+    "slug": "cosm-ticos",
+    "total": 22
+  },
+  {
+    "id": 3,
+    "name": "Limpeza",
+    "slug": "limpeza",
+    "total": 1
+  },
+  {
+    "id": 4,
+    "name": "Outros",
+    "slug": "outros",
+    "total": 2
+  },
+  {
+    "id": 5,
+    "name": "Produtos Naturais",
+    "slug": "produtos-naturais",
+    "total": 10
+  }
+]
