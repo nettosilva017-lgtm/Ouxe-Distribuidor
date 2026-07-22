@@ -227,7 +227,8 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
 
 
 </style>
-<link rel="manifest" href="./manifest.json">
+<link rel="manifest" id="manifestLink" href="./manifest.json">
+<link rel="apple-touch-icon" id="appleIcon" href="./icon-192.png">
 </head>
 <body>
 
@@ -352,9 +353,7 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <div id="backupStorageInfo" style="font-size:12px;color:#999;margin-bottom:12px;"></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
                 <button class="btn-primary" onclick="exportBackup()" style="flex:1;">⬇️ Exportar backup (.json)</button>
-                <button class="btn-primary" onclick="exportProdutosJson()" style="flex:1;background:#1E4630;">⬆️ Gerar produtos.json p/ GitHub</button>
             </div>
-            <p style="font-size:11px;color:#666;margin-bottom:12px;">Para não sumir em outro celular: após adicionar produtos, clique em <b>Gerar produtos.json</b>, depois faça upload/commit desse arquivo na raiz do seu repositório GitHub (junto do index.html). Aí todos os dispositivos vão carregar o mesmo catálogo.</p>
             <div class="form-group">
                 <label>Restaurar backup</label>
                 <input type="file" id="backupFile" accept="application/json">
@@ -687,25 +686,14 @@ try { if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynt
 window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; });
 function handleInstallClick(){
     const btn=document.getElementById('navInstallBtn');
-    if (deferredPrompt){
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choice)=>{
-            console.log('Install choice:', choice.outcome);
-            deferredPrompt=null;
-            if(btn && isStandalone()) btn.style.display='none';
-        });
-    } else {
-        const ua=navigator.userAgent;
-        let msg='';
-        if(/iPhone|iPad|iPod/i.test(ua)) {
-            msg='No iPhone: Toque no botão Compartilhar ⤴️ (no Safari) e depois em <b>Adicionar à Tela de Início</b>.';
-        } else if(/Android/i.test(ua)) {
-            msg='No Android: Toque no menu ⋮ do Chrome e selecione <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>. Se não aparecer, você já pode estar no modo instalado ou precisa acessar via HTTPS.';
-        } else {
-            msg='No computador: Clique no ícone de instalação na barra de endereço (🔧 ou 💻) ou no menu ⋮ > <b>Instalar OUXE Distribuidor</b>. Certifique-se que está em HTTPS e que o arquivo manifest.json e sw.js estão na mesma pasta.';
-        }
+    if (deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; if(btn && isStandalone()) btn.style.display='none'; }); }
+    else {
+        const ua=navigator.userAgent; let msg='';
+        if(/iPhone|iPad|iPod/i.test(ua)) msg='Toque no botão Compartilhar ⤴️ e depois em Adicionar à Tela de Início';
+        else if(/Android/i.test(ua)) msg='Toque no menu ⋮ e selecione Instalar app';
+        else msg='Clique no ícone de instalação na barra de endereço';
         const inst = document.getElementById('installInstructions');
-        if (inst) inst.innerHTML = msg + '<br><br><small style="color:#999">Dica: No GitHub Pages, o botão só funciona depois que você fizer commit dos arquivos manifest.json, sw.js e icon-*.png na raiz do repositório.</small>';
+        if (inst) inst.textContent = msg;
         document.getElementById('installModal')?.classList.add('active');
     }
 }
@@ -999,25 +987,6 @@ function renderBackupInfo() {
     }
 }
 
-function exportProdutosJson() {
-    try {
-        // Exporta apenas produtos sem imagens base64 para não ficar gigante (GitHub)
-        const paraGitHub = products.map(p => ({name: p.name, price: p.price, category: p.category, image: ''}));
-        const blob = new Blob([JSON.stringify(paraGitHub, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'produtos.json';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showToast('⬆️ produtos.json gerado! Faça commit no GitHub');
-    } catch(e) {
-        showToast('❌ Erro ao gerar produtos.json');
-    }
-}
-
 function exportBackup() {
     try {
         const backup = {
@@ -1086,6 +1055,55 @@ function importBackup() {
     reader.readAsText(file);
 }
 
+// ===== PWA LOGO DINÂMICA - usa a logo atual no momento de instalar =====
+function updateManifestLogo() {
+  try {
+    const logo = (typeof empresaConfig !== 'undefined' && empresaConfig && empresaConfig.logo) ? empresaConfig.logo : null;
+    const nome = (typeof empresaConfig !== 'undefined' && empresaConfig && empresaConfig.nome) ? empresaConfig.nome : 'OUXE Distribuidor';
+    const shortName = (typeof empresaConfig !== 'undefined' && empresaConfig && empresaConfig.logoTexto) ? empresaConfig.logoTexto : 'OUXE';
+    const sub = (typeof empresaConfig !== 'undefined' && empresaConfig && empresaConfig.sub) ? empresaConfig.sub : 'Produtos naturais e cosméticos';
+    
+    const manifestData = {
+      name: nome,
+      short_name: shortName,
+      description: sub,
+      start_url: './',
+      scope: './',
+      display: 'standalone',
+      background_color: '#F0F3E9',
+      theme_color: '#2e7d32',
+      icons: logo ? [
+        {src: logo, sizes: '192x192', type: 'image/jpeg', purpose: 'any maskable'},
+        {src: logo, sizes: '512x512', type: 'image/jpeg', purpose: 'any maskable'},
+        {src: logo, sizes: '512x512', type: 'image/jpeg', purpose: 'any'}
+      ] : [
+        {src: './icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable'},
+        {src: './icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable'},
+        {src: './icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any'}
+      ]
+    };
+    
+    const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const link = document.getElementById('manifestLink');
+    if (link) link.href = url;
+    
+    // Atualiza apple-touch-icon também
+    let apple = document.getElementById('appleIcon');
+    if (!apple) {
+      apple = document.createElement('link');
+      apple.rel = 'apple-touch-icon';
+      apple.id = 'appleIcon';
+      document.head.appendChild(apple);
+    }
+    if (logo) apple.href = logo;
+    
+    console.log('✅ Manifest atualizado com logo:', logo ? 'custom' : 'padrão OU');
+  } catch(e) {
+    console.warn('Erro ao atualizar manifest:', e);
+  }
+}
+
 function renderEmpresaHeader(){
   const n=document.getElementById('empresaNomeDisplay');
   const s=document.getElementById('empresaSubDisplay');
@@ -1095,6 +1113,8 @@ function renderEmpresaHeader(){
   s.textContent=empresaConfig.sub||EMPRESA_DEFAULT.sub;
   document.title=empresaConfig.nome||EMPRESA_DEFAULT.nome;
   if(empresaConfig.logo){ ic.innerHTML=`<img src="${escapeAttr(empresaConfig.logo)}" alt="logo">`; } else { ic.textContent=empresaConfig.logoTexto||'OU'; }
+
+  updateManifestLogo();
 }
 function loadEmpresaForm(){
   const el=document.getElementById('empresaNome');
@@ -1117,6 +1137,7 @@ function saveEmpresa(){
   empresaConfig={nome,sub,logoTexto,logo};
   localStorage.setItem('ouxe-empresa', JSON.stringify(empresaConfig));
   renderEmpresaHeader();
+  updateManifestLogo();
   showToast('✓ Empresa salva!');
 }
 function removeEmpresaLogo(){
@@ -1129,6 +1150,7 @@ function removeEmpresaLogo(){
   const fe=document.getElementById('empresaLogoFile');
   if(fe) fe.value='';
   saveEmpresa();
+  setTimeout(()=>updateManifestLogo(), 100);
 }
 function resizeImageToSquare(dataUrl, callback){
   const img=new Image();
@@ -1400,55 +1422,32 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// ===== BANCO DE DADOS GITHUB - produtos.json =====
-async function loadProductsFromGitHub() {
-    try {
-        // Tenta buscar do GitHub (produtos.json) com cache-bust
-        const res = await fetch('./produtos.json?v=' + Date.now(), {cache: 'no-store'});
-        if (!res.ok) throw new Error('produtos.json não encontrado');
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-            console.log('📦 Produtos carregados do GitHub:', data.length);
-            // Mescla imagens locais se existirem
-            if (storedProducts && storedProducts.length > 0) {
-                const localMap = new Map(storedProducts.map(p => [p.name, p.image]));
-                data.forEach(p => {
-                    const img = localMap.get(p.name);
-                    if (img) p.image = img;
-                });
-            }
-            return cloneProducts(data);
-        }
-    } catch(e) {
-        console.log('Usando produtos locais, GitHub não encontrado:', e.message);
-    }
-    return null;
-}
-
-// ===== PWA INSTALL - REGISTRO CORRETO PARA GITHUB PAGES =====
+// ===== PWA INSTALL - REGISTRO COM LOGO DINÂMICA =====
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // Registra o sw.js REAL (não blob) - necessário para o botão Instalar funcionar
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('✅ SW registrado:', reg.scope))
-            .catch(err => console.log('SW falhou, tentando blob:', err));
+        // Tenta registrar sw.js real primeiro (necessário pro botão Instalar funcionar no GitHub)
+        navigator.serviceWorker.register('./sw.js').then(()=>{
+            console.log('✅ SW real registrado');
+        }).catch(()=>{
+            // Fallback para blob se sw.js não existir
+            const swContent = `const CACHE_NAME = 'ouxe-v6';
+const ASSETS = ['./','./index.html'];
+self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())); });
+self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))).then(() => self.clients.claim()))); });
+self.addEventListener('fetch', (e) => { if (e.request.method !== 'GET') return; e.respondWith(caches.match(e.request).then((cached) => { if (cached) return cached; return fetch(e.request).then((resp) => { if (!resp || resp.status !== 200 || resp.type !== 'basic') return resp; const rc=resp.clone(); caches.open(CACHE_NAME).then((c)=>c.put(e.request, rc)); return resp; }).catch(() => caches.match('./index.html')); })); });
+`;
+            try {
+                const blob = new Blob([swContent], {type: 'application/javascript'});
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(() => {});
+            } catch(e){}
+        });
     });
 }
 
-// ===== INICIALIZAÇÃO COM BANCO GITHUB =====
-(async function initApp(){
-    // 1. Tenta carregar do GitHub primeiro (produtos.json)
-    const githubProducts = await loadProductsFromGitHub();
-    if (githubProducts && githubProducts.length > 0) {
-        // Se GitHub tem mais produtos que local, usa GitHub
-        // Se local tem imagens, já mesclamos acima
-        if (!storedProducts || githubProducts.length >= storedProducts.length) {
-            products = githubProducts;
-            try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
-        }
-    }
-    
-    // 2. Garante que produtos existem
+// ===== INICIALIZAÇÃO =====
+(function initApp(){
+    // Garante que produtos existem
     if (!products || !Array.isArray(products) || products.length === 0) {
         products = cloneProducts(DEFAULT_PRODUCTS);
         try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
@@ -1463,7 +1462,8 @@ if ('serviceWorker' in navigator) {
         const btn = document.getElementById('navInstallBtn');
         if (btn) btn.style.display = 'none';
     }
-    console.log('✅ OUXE Distribuidor inicializado com', products.length, 'produtos (GitHub OK)');
+    try { updateManifestLogo(); } catch(e){}
+    console.log('✅ OUXE Distribuidor inicializado com', products.length, 'produtos');
 })();
 
 </script>
