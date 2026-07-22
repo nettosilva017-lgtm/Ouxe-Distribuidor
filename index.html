@@ -356,10 +356,11 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <div style="display:flex;gap:8px;"><button class="btn-primary" onclick="saveEmpresa()" style="flex:1;">💾 Salvar Empresa</button><button class="btn-primary" onclick="removeEmpresaLogo()" style="background:#666;flex:0.5;">🗑 Remover logo</button></div>
         </div>
         <div class="admin-panel" id="panel-backup">
-            <p style="font-size:13px;color:#666;margin-bottom:12px;">Os produtos ficam salvos apenas neste navegador. Exporte backup regularmente.</p>
+            <p style="font-size:13px;color:#666;margin-bottom:12px;">✅ Os produtos agora ficam no arquivo <b>produtos.json</b> e aparecem em <b>todos os terminais</b>. Após adicionar/editar produtos, clique em <b>Exportar produtos.json</b> e substitua o arquivo no GitHub.</p>
             <div id="backupStorageInfo" style="font-size:12px;color:#999;margin-bottom:12px;"></div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-                <button class="btn-primary" onclick="exportBackup()" style="flex:1;">⬇️ Exportar backup (.json)</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;flex-direction:column;">
+                <button class="btn-primary" onclick="exportProdutosJson()" style="background:#1E4630;">📦 Exportar produtos.json (para GitHub)</button>
+                <button class="btn-primary" onclick="exportBackup()" style="flex:1; background:#2F7A52;">⬇️ Exportar backup completo (.json)</button>
             </div>
             <div class="form-group">
                 <label>Restaurar backup</label>
@@ -442,24 +443,8 @@ function cloneProducts(arr) {
     })).filter(p => p.name);
 }
 
-// ===== CORREÇÃO: Carregamento seguro dos produtos =====
-function loadStoredProducts() {
-    try {
-        const raw = localStorage.getItem('ouxe-products');
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed) || parsed.length === 0) return null;
-        if (parsed.some(p => !p || !p.name || typeof p.price === 'undefined')) return null;
-        return cloneProducts(parsed);
-    } catch (e) {
-        console.warn('Erro ao ler produtos do storage:', e);
-        return null;
-    }
-}
-
-let storedProducts = loadStoredProducts();
-let products = storedProducts ? cloneProducts(storedProducts) : cloneProducts(DEFAULT_PRODUCTS);
-
+// ===== NOVO: Produtos vêm do produtos.json (igual em todos os terminais) =====
+let products = cloneProducts(DEFAULT_PRODUCTS);
 let empresaConfig;
 try {
     empresaConfig = JSON.parse(localStorage.getItem('ouxe-empresa') || 'null') || {...EMPRESA_DEFAULT};
@@ -478,6 +463,29 @@ let currentCategory = 'Todos';
 let editingIndex = -1;
 let searchTerm = '';
 let searchDebounceTimer = null;
+
+async function loadProductsFromJson() {
+    try {
+        const res = await fetch('./produtos.json?v=' + Date.now(), {cache: 'no-store'});
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+            const valid = data.filter(p => p && p.name);
+            if (valid.length > 0) {
+                products = cloneProducts(valid);
+                console.log(`✅ ${products.length} produtos carregados de produtos.json`);
+            }
+        }
+    } catch(e) {
+        console.warn('⚠️ Falha ao carregar produtos.json, usando DEFAULT_PRODUCTS', e);
+        products = cloneProducts(DEFAULT_PRODUCTS);
+    }
+    try { renderCategories(); } catch(e){}
+    try { renderProducts(); } catch(e){}
+    try { renderBackupInfo(); } catch(e){}
+    try { updateCartBadge(); } catch(e){}
+    return products;
+}
 
 // ===== SEGURANÇA: escapa HTML para evitar XSS =====
 function escapeHtml(str) {
@@ -521,28 +529,38 @@ function clearSearch() {
     renderProducts();
 }
 
-if (!storedProducts) {
-    try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
-}
+// REMOVIDO: produtos agora vêm do produtos.json, não mais do localStorage
 
 // ===== FUNÇÕES DE ARMAZENAMENTO =====
 function saveProducts() { 
-    try {
-        localStorage.setItem('ouxe-products', JSON.stringify(products)); 
-    } catch(e) {
-        console.error('Erro ao salvar produtos', e);
-        // Tenta salvar sem imagens para não perder o catálogo
-        try {
-            const withoutImages = products.map(p => ({...p, image: ''}));
-            localStorage.setItem('ouxe-products', JSON.stringify(withoutImages));
-            showToast('⚠️ Armazenamento cheio! Imagens não salvas, faça backup');
-        } catch(e2) {
-            showToast('❌ Erro ao salvar - armazenamento cheio');
-        }
-    }
+    // NOVO: Não usa mais localStorage para produtos
+    // Produtos ficam no produtos.json (igual para todos os terminais)
+    console.log('💾 Produtos em memória:', products.length);
+    try { sessionStorage.setItem('ouxe-products-temp', JSON.stringify(products)); } catch(e){}
+    try { renderBackupInfo(); } catch(e){}
+    // Aviso para exportar
+    // showToast será chamado por quem chamou saveProducts
 }
 function saveCart() { 
     try { localStorage.setItem('ouxe-cart', JSON.stringify(cart)); } catch(e){}
+}
+
+function exportProdutosJson() {
+    try {
+        const blob = new Blob([JSON.stringify(products, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'produtos.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showToast('✅ produtos.json exportado! Substitua no GitHub');
+    } catch(e) {
+        console.error(e);
+        showToast('❌ Erro ao exportar produtos.json');
+    }
 }
 
 function resetToDefaultProducts() {
@@ -585,7 +603,6 @@ function renderProducts() {
     }
     if (!products || !Array.isArray(products) || products.length === 0) {
         products = cloneProducts(DEFAULT_PRODUCTS);
-        try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
     }
     grid.innerHTML = '';
     
@@ -977,9 +994,10 @@ function renderBackupInfo() {
             if (Object.prototype.hasOwnProperty.call(localStorage, k)) bytes += (localStorage[k].length + k.length) * 2;
         }
         const kb = (bytes / 1024).toFixed(0);
-        el.textContent = `${products.length} produtos salvos • uso aproximado: ${kb} KB`;
+        const src = 'produtos.json';
+        el.innerHTML = `${products.length} produtos carregados de <b>${src}</b> • visível em todos os terminais<br><span style="font-size:11px;color:#666;">Uso local: ${kb} KB (carrinho/empresa) • Fonte: ${src}</span>`;
     } catch (e) {
-        el.textContent = `${products.length} produtos salvos`;
+        el.textContent = `${products.length} produtos de produtos.json (todos os terminais)`;
     }
 }
 
@@ -1524,39 +1542,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ===== INICIALIZAÇÃO - PRODUTOS SEMPRE APARECEM =====
-(function initApp(){
+// ===== INICIALIZAÇÃO - PRODUTOS VÊM DE produtos.json (todos os terminais) =====
+(async function initApp(){
     try {
-        // Limpa cache ruim se existir
-        const badCache = localStorage.getItem('ouxe-products');
-        if (badCache) {
-            try {
-                const parsed = JSON.parse(badCache);
-                if (!Array.isArray(parsed) || parsed.length === 0) {
-                    console.log('Cache vazio/corrompido, restaurando padrão');
-                    localStorage.removeItem('ouxe-products');
-                    storedProducts = null;
-                }
-            } catch(e) {
-                localStorage.removeItem('ouxe-products');
-                storedProducts = null;
-            }
-        }
-        
-        // Garante que produtos existem
-        if (!products || !Array.isArray(products) || products.length === 0) {
-            console.log('Produtos vazios, restaurando DEFAULT');
-            products = cloneProducts(DEFAULT_PRODUCTS);
-            try { localStorage.setItem('ouxe-products', JSON.stringify(products)); } catch(e){}
-        }
-        
-        console.log(`✅ Iniciando com ${products.length} produtos`);
+        console.log('🚀 Iniciando OUXE Distribuidor...');
+        // Limpa cache antigo de produtos que estava no localStorage (migração)
+        try { localStorage.removeItem('ouxe-products'); } catch(e){}
         
         if(typeof renderEmpresaHeader==='function') {
             try { renderEmpresaHeader(); } catch(e){ console.error(e); }
         }
         
-        // Força render mesmo se elementos não existirem ainda
+        // Tenta carregar produtos.json (fonte única para todos os terminais)
+        try {
+            await loadProductsFromJson();
+        } catch(e) {
+            console.warn('Erro ao carregar produtos.json, usando DEFAULT', e);
+            products = cloneProducts(DEFAULT_PRODUCTS);
+            renderCategories();
+            renderProducts();
+        }
+        
+        console.log(`✅ Iniciando com ${products.length} produtos de produtos.json`);
+        
+        // Garante render mesmo se DOM ainda não pronto
         setTimeout(() => {
             try {
                 renderCategories();
@@ -1566,11 +1575,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) {
                 console.error('Erro ao renderizar:', e);
             }
-        }, 100);
+        }, 150);
         
         renderCategories();
         renderProducts();
         updateCartBadge();
+        renderBackupInfo();
         
         if (isStandalone()) {
             const btn = document.getElementById('navInstallBtn');
@@ -1578,13 +1588,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch(e) {
         console.error('Erro crítico initApp:', e);
-        // Fallback extremo - mostra produtos mesmo com erro
         try {
             products = cloneProducts(DEFAULT_PRODUCTS);
             const grid = document.getElementById('productsGrid');
             if (grid) {
-                grid.innerHTML = '<p style="padding:20px; color:red;">Erro ao carregar, restaurando... Recarregue a página</p>';
-                setTimeout(()=>{ renderProducts(); }, 500);
+                grid.innerHTML = '<p style="padding:20px; color:red;">Erro ao carregar, usando produtos padrão... Recarregue a página</p>';
+                setTimeout(()=>{ renderProducts(); renderCategories(); }, 500);
             }
         } catch(e2){}
     }
