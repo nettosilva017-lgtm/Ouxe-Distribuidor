@@ -1,22 +1,29 @@
-const CACHE_NAME = 'ouxe-v10-polido';
+const CACHE_NAME = 'ouxe-v11-android-fix';
 const ASSETS = [
   './',
   './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './manifest.json'
+  // icones removidos do cache obrigatorio - Chrome falha se der 404
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('[SW] Install - limpando cache antigo e instalando novo');
+  console.log('[SW v11] Install - limpando cache antigo');
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() =>
       caches.open(CACHE_NAME).then(cache => {
+        // cache.addAll nao pode falhar por causa de icones - so essencial
         return cache.addAll(ASSETS.map(url => new Request(url, {cache: 'no-store'}))).catch(err => {
-          console.log('[SW] addAll falhou, tentando individual', err);
-          return Promise.allSettled(ASSETS.map(url => cache.add(url).catch(()=>{})));
+          console.log('[SW] addAll essencial falhou, tentando individual', err);
+          return Promise.allSettled(ASSETS.map(url => cache.add(new Request(url, {cache: 'no-store'})).catch(()=>{})));
+        });
+      }).then(() => {
+        // tenta cachear icones de forma opcional, sem quebrar install
+        caches.open(CACHE_NAME).then(cache => {
+          ['icon-192.png','icon-512.png','./icon-192.png','./icon-512.png'].forEach(u => {
+            cache.add(new Request(u, {cache: 'no-store'})).catch(()=>{});
+          });
         });
       })
     ).then(() => self.skipWaiting())
@@ -24,7 +31,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activate - assumindo controle');
+  console.log('[SW v11] Activate - assumindo controle');
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
@@ -79,7 +86,7 @@ self.addEventListener('fetch', (event) => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
         return response;
-      });
+      }).catch(() => cached);
     })
   );
 });
