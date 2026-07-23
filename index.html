@@ -106,7 +106,7 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
 .qty-input::-webkit-outer-spin-button, .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .qty-input[type=number] { -moz-appearance: textfield; }
 .product-info { padding: 13px; flex: 1; display: flex; flex-direction: column; }
-.product-name { font-size: 12.5px; color: var(--ink); min-height: 34px; margin-bottom: 6px; line-height: 1.35; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.product-name { font-size: 12.5px; color: var(--ink); min-height: 34px; margin-bottom: 6px; line-height: 1.35; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-transform: uppercase; }
 .product-price { color: var(--gold); font-weight: 700; font-size: 17px; margin-bottom: 10px; font-family: 'Fraunces', serif; }
 .qty-control { display: flex; align-items: center; justify-content: space-between; background: var(--paper); border-radius: var(--radius-sm); margin-bottom: 8px; padding: 4px; gap:4px; }
 .qty-btn { background: var(--card); border: 1px solid var(--line); width: 28px; height: 28px; border-radius: 7px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; color: var(--forest); font-size: 16px; transition: background .15s ease, color .15s ease; }
@@ -436,11 +436,11 @@ const EMPRESA_DEFAULT = { nome: 'OUXE Distribuidor', sub: 'Produtos naturais e c
 function cloneProducts(arr) {
     if (!Array.isArray(arr)) return [];
     return arr.map(p => ({
-        name: String(p?.name || '').trim(),
+        name: String(p?.name || '').trim().toUpperCase(),
         price: Number(p?.price) || 0,
         category: p?.category || 'Outros',
         image: p?.image || ''
-    })).filter(p => p.name);
+    })).filter(p => p.name).sort((a,b) => a.name.localeCompare(b.name, 'pt-BR'));
 }
 
 // ===== NOVO: Produtos vêm do produtos.json (igual em todos os terminais) =====
@@ -613,6 +613,8 @@ function renderProducts() {
         const q = normalizeText(searchTerm);
         filtered = filtered.filter(p => normalizeText(p.name).includes(q));
     }
+    // ORDEM ALFABETICA - requisito
+    filtered = filtered.slice().sort((a,b) => a.name.localeCompare(b.name, 'pt-BR'));
 
     if (filtered.length === 0) {
         const msg = searchTerm
@@ -1153,7 +1155,7 @@ document.getElementById('prodImage')?.addEventListener('change', (e) => {
 });
 
 function saveProduct() {
-    const name = document.getElementById('prodName')?.value.trim() || '';
+    const name = (document.getElementById('prodName')?.value.trim() || '').toUpperCase();
     const priceVal = document.getElementById('prodPrice')?.value;
     const price = parseFloat(priceVal);
     const category = document.getElementById('prodCategory')?.value || 'Outros';
@@ -1362,7 +1364,7 @@ function importProducts() {
     lines.forEach(line => {
         const parts = line.split('|').map(s => s.trim());
         if (parts.length >= 2) {
-            const name = parts[0];
+            const name = parts[0].toUpperCase();
             const price = parseFloat(parts[1].replace(',', '.'));
             const category = parts[2] || 'Outros';
             if (name && !isNaN(price)) { products.push({ name, price, category, image: '' }); count++; }
@@ -1454,14 +1456,21 @@ function handleInstallClick(){
         if (inst) {
             inst.innerHTML = `
                 <div style="text-align:left; line-height:1.6;">
-                    <p style="margin-bottom:12px; font-weight:600;">📱 Android:</p>
-                    <p>1️⃣ Menu ⋮ no Chrome</p>
-                    <p>2️⃣ <b>Instalar app</b></p>
-                    <p style="font-size:12px; color:#666; background:#f5f5f5; padding:8px; border-radius:8px; margin-top:8px;">Precisa HTTPS e manifest.json + sw.js na mesma pasta</p>
+                    <p style="margin-bottom:12px; font-weight:600;">📱 Android - Como instalar:</p>
+                    <p>1️⃣ Toque no menu ⋮ do Chrome (canto superior direito)</p>
+                    <p>2️⃣ Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b></p>
+                    <p>3️⃣ Confirme em <b>Instalar</b></p>
+                    <div style="font-size:12px; color:#444; background:#E8F5E9; padding:10px; border-radius:8px; margin-top:10px; border-left:4px solid #2e7d32;">
+                        <b>Dica:</b> Se não aparecer a opção, recarregue a página, aguarde 5 segundos e tente novamente. Use Chrome atualizado. O app já está pronto para instalar - essa mensagem aparece só enquanto o Chrome carrega.
+                    </div>
                 </div>
             `;
         }
         if (modal) modal.classList.add('active');
+        // Tenta forçar registro do SW caso ainda não esteja controlando
+        if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
+            navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW registrado via fallback Android')).catch(()=>{});
+        }
         return;
     }
     
@@ -1470,7 +1479,7 @@ function handleInstallClick(){
             <div style="text-align:left; line-height:1.6;">
                 <p style="margin-bottom:12px; font-weight:600;">💻 Notebook/Desktop:</p>
                 <p>Chrome: ícone 💻⬇️ na barra de endereço ou menu ⋮ > Instalar</p>
-                <p style="font-size:12px; color:#666; background:#f5f5f5; padding:8px; border-radius:8px; margin-top:8px;">Requer manifest.json, sw.js, icon-192.png, icon-512.png na mesma pasta</p>
+                <p style="font-size:12px; color:#444; background:#E8F5E9; padding:10px; border-radius:8px; margin-top:10px; border-left:4px solid #2e7d32;">Se o ícone não aparecer, recarregue a página. O app já está configurado para instalar.</p>
             </div>
         `;
     }
