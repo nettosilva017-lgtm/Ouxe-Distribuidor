@@ -1,9 +1,9 @@
-const CACHE_NAME = 'ouxe-v11-android-fix';
+const CACHE_NAME = 'ouxe-v12-alfabetica-logo';
 const ASSETS = [
   './',
   './index.html',
-  './manifest.json'
-  // icones removidos do cache obrigatorio - Chrome falha se der 404
+  './manifest.json',
+  './produtos.json'
 ];
 
 self.addEventListener('install', (event) => {
