@@ -755,14 +755,14 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
   <div class="modal-box" style="max-width:420px;">
     <h2>📤 Compartilhar Loja <button class="close-x" onclick="closeShareModal()">×</button></h2>
     <div class="share-preview">
-      <div class="share-preview-imgwrap" onclick="shareLogoToWhatsApp()" title="Toque para enviar a logo no WhatsApp">
+      <div class="share-preview-imgwrap" onclick="window.open(OUXE_SITE_URL, '_blank')" title="Toque para abrir o site da loja">
         <img src="./logo.jpg" id="sharePreviewImg" alt="OUXE Distribuidor" onerror="this.onerror=null; this.src='./icon-512.png';">
-        <span class="share-preview-badge">💬</span>
+        <span class="share-preview-badge" onclick="event.stopPropagation(); shareLogoToWhatsApp();" title="Toque para enviar a logo no WhatsApp">💬</span>
       </div>
       <div style="flex:1; min-width:0;">
         <strong style="color:var(--forest);">OUXE Distribuidor</strong>
         <p style="font-size:13px;color:var(--ink-soft);margin-top:3px;">Faça seu pedido, Milionario(a), rico(a), Aqui 👉</p>
-        <small style="color:var(--leaf); word-break:break-all; font-size:11.5px;">https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/</small>
+        <a href="https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/" target="_blank" rel="noopener" style="display:block; color:var(--leaf); word-break:break-all; font-size:11.5px; text-decoration:none;">https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/</a>
       </div>
     </div>
     <div class="share-grid">
