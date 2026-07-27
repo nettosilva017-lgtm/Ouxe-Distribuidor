@@ -2541,13 +2541,10 @@ Faça seu pedido, Milionario(a), rico(a), Aqui 👉 ${OUXE_SITE_URL}`;
 }
 
 function handleShareMilionario(){
-  const texto = `🖼️ OUXE Distribuidor
-Faça seu pedido, Milionario(a), rico(a), Aqui 👉`;
-  if(navigator.share){
-    navigator.share({title: OUXE_SHARE_TITLE, text: texto, url: OUXE_SITE_URL}).then(()=> showToast('✅ Link compartilhado!')).catch((err)=>{ if(err && err.name !== 'AbortError') openShareModal(); });
-  } else {
-    openShareModal();
-  }
+  // Sempre abre a tela personalizada (com o logo e as opções de WhatsApp/Facebook/Copiar/Com Imagem).
+  // Antes, em conexões HTTPS (como GitHub Pages), o navigator.share nativo do celular tomava a frente
+  // e abria a folha de compartilhamento do próprio sistema, escondendo essa tela.
+  openShareModal();
 }
 
 function shareViaWhatsApp(){
