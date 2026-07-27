@@ -104,6 +104,20 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
 /* ===== Cartão de produto ===== */
 .product-card { background: var(--card); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card); border: 1px solid rgba(30,70,48,.05); transition: transform .18s ease, box-shadow .18s ease; display: flex; flex-direction: column; animation: cardIn .38s cubic-bezier(.2,.8,.3,1.1) both; }
 .product-card:hover { transform: translateY(-4px); box-shadow: 0 4px 8px rgba(30,55,40,.08), 0 16px 28px -12px rgba(30,55,40,.28); }
+
+.product-card.indisponivel { opacity: 0.78; position: relative; }
+.product-card.indisponivel .product-img { position: relative; background: #f8f8f8; }
+.product-card.indisponivel .product-img img { opacity: 0.85; display:block; }
+.product-card.indisponivel .add-btn { background: #ccc !important; color: #777 !important; cursor: not-allowed !important; }
+.product-card.indisponivel .qty-btn { opacity: 0.4; pointer-events: none; }
+.product-card.indisponivel .qty-input { opacity: 0.5; pointer-events: none; background: #f0f0f0; }
+.badge-indisponivel { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); background: #C62828; color: #fff; font-size: 10.5px; font-weight: 800; padding: 5px 12px; border-radius: 999px; z-index: 3; letter-spacing: 0.4px; box-shadow: 0 2px 8px rgba(198,75,75,0.4); white-space: nowrap; }
+.admin-product-item.indisponivel { opacity: 0.65; background: #FFF5F5; }
+.admin-product-item.indisponivel .info h4 { text-decoration: line-through; color: #999; }
+.badge-admin-indisponivel { display: inline-block; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+.btn-toggle-disponivel { background: #FFF3E0 !important; color: #E65100 !important; border: 1px solid #FFCC80 !important; }
+.btn-toggle-disponivel.disponivel { background: var(--leaf-soft) !important; color: var(--forest) !important; border: 1px solid var(--line) !important; }
+
 @keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .cart-badge.pulse { animation: badgePulse .45s ease; }
 @keyframes badgePulse { 0%{ transform: scale(1); } 40%{ transform: scale(1.35); } 70%{ transform: scale(.9); } 100%{ transform: scale(1); } }
@@ -633,6 +647,13 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <div class="form-group"><label>Preço (R$)</label><input type="number" id="prodPrice" step="0.01" placeholder="0.00"></div>
             <div class="form-group"><label>Categoria</label><select id="prodCategory"><option value="Todos">Todos</option><option value="Bebidas">Bebidas</option><option value="Alimentos">Alimentos</option><option value="Limpeza">Limpeza</option><option value="Cosméticos">Cosméticos</option><option value="Produtos Naturais">Produtos Naturais</option><option value="Acessórios">Acessórios</option><option value="Promoção">Promoção</option><option value="Outros">Outros</option></select></div>
             <div class="form-group"><label>Imagem do produto</label><input type="file" id="prodImage" accept="image/*"><div id="imagePreview" style="margin-top:8px;"></div></div>
+            <div class="form-group" style="background:#FFF8F8; border:1.5px dashed #FFCDD2; padding:12px; border-radius:10px;">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer; user-select:none;">
+                <input type="checkbox" id="prodIndisponivel" style="width:20px;height:20px;accent-color:var(--danger);flex-shrink:0;">
+                <span style="color:var(--danger);font-weight:700;font-size:13px;">🚫 Marcar como INDISPONÍVEL (não pode ser comprado)</span>
+              </label>
+              <small style="display:block;margin-top:6px;color:#8a6a6a;font-size:11.5px;padding-left:30px;">Quando marcado, o produto aparece com tarja mas não deixa adicionar ao carrinho.</small>
+            </div>
             <button class="btn-primary" onclick="saveProduct()">💾 Salvar Produto</button>
         </div>
         <div class="admin-panel" id="panel-list"><div class="admin-product-list" id="adminProductList"></div></div>
@@ -809,7 +830,9 @@ function cloneProducts(arr) {
         name: String(p?.name || '').trim().toUpperCase(),
         price: Number(p?.price) || 0,
         category: p?.category || 'Outros',
-        image: p?.image || ''
+        image: p?.image || '',
+        disponivel: p?.disponivel !== false && !p?.indisponivel,
+        indisponivel: !!(p?.indisponivel || p?.disponivel === false)
     })).filter(p => p.name).sort((a,b) => a.name.localeCompare(b.name, 'pt-BR'));
 }
 
@@ -1016,10 +1039,8 @@ function renderProducts() {
               }
             });
         } else {
-            let filteredPromo = products.filter(p => p.category === 'Promoção');
-            if(filteredPromo.length === 0) filteredPromo = products.filter(p => p.image).slice(0,7);
-            promoProducts = filteredPromo.slice(0,7);
-            promoMeta = promoProducts.map((_,i)=>({ idx: -1, qty: 1 }));
+            promoProducts = [];
+            promoMeta = [];
         }
 
         const nomeEmpresa = escapeHtml(empresaConfig?.nome || 'Ouxe Distribuidor');
@@ -1074,12 +1095,7 @@ function renderProducts() {
                   <button class="promo-add-btn" onclick="addPromoToCart(${realIdx})">+ Carrinho</button>
                 </div>`;
             }).join('');
-            // Completa até 7 com placeholder se precisar
-            if(promoProducts.length < 7){
-                for(let i=promoProducts.length; i<7; i++){
-                    gridItemsHtml += `<div class="promo-poster-item" style="background:#fafafa; opacity:.6;"><div class="promo-poster-item-img" style="display:flex;align-items:center;justify-content:center; font-size:24px;">➕</div><div class="promo-poster-item-name" style="color:#999;">Vazio<br>Adicione no admin</div></div>`;
-                }
-            }
+            // Sem placeholders - só mostra produtos adicionados
         }
 
         grid.innerHTML = `
@@ -1124,15 +1140,30 @@ function renderProducts() {
 
     filtered.forEach((p, visualIdx) => {
         const realIdx = products.indexOf(p);
+        const isIndisponivel = p?.disponivel === false || p?.indisponivel === true;
         if (quantities[realIdx] === undefined) quantities[realIdx] = 0;
         if (quantities[realIdx] > 9999) quantities[realIdx] = 9999;
         const safeName = escapeHtml(p.name);
         const safeImage = p.image ? escapeAttr(p.image) : '';
         const imgHtml = p.image ? `<img src="${safeImage}" alt="${safeName}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='📦';">` : '📦';
         const card = document.createElement('div');
-        card.className = 'product-card';
+        card.className = 'product-card' + (isIndisponivel ? ' indisponivel' : '');
         card.style.animationDelay = (Math.min(visualIdx, 20) * 18) + 'ms';
-        card.innerHTML = `
+        if(isIndisponivel){
+            card.innerHTML = `
+            <div class="product-img">${imgHtml}<span class="badge-indisponivel">INDISPONÍVEL</span></div>
+            <div class="product-info">
+                <div class="product-name" title="${safeName}">${safeName}</div>
+                <div class="product-price" style="opacity:0.5;">R$ ${Number(p.price || 0).toFixed(2).replace('.', ',')}</div>
+                <div class="qty-control" style="opacity:0.4; pointer-events:none;">
+                    <button class="qty-btn" disabled>−</button>
+                    <input type="number" class="qty-input" value="0" disabled>
+                    <button class="qty-btn" disabled>+</button>
+                </div>
+                <button class="add-btn" disabled style="background:#ccc;color:#777;cursor:not-allowed;">🚫 Indisponível</button>
+            </div>`;
+        } else {
+            card.innerHTML = `
             <div class="product-img">${imgHtml}</div>
             <div class="product-info">
                 <div class="product-name" title="${safeName}">${safeName}</div>
@@ -1144,11 +1175,14 @@ function renderProducts() {
                 </div>
                 <button class="add-btn" id="add-btn-${realIdx}" onclick="addToCart(${realIdx})">+ Adicionar</button>
             </div>`;
+        }
         grid.appendChild(card);
     });
 }
 
 function changeQty(idx, delta) {
+    const p = products[idx];
+    if (p && (p?.disponivel === false || p?.indisponivel === true)) { showToast('🚫 Produto indisponível'); return; }
     let v = (quantities[idx] || 0) + delta;
     v = Math.max(0, Math.min(9999, v));
     quantities[idx] = v;
@@ -1156,6 +1190,8 @@ function changeQty(idx, delta) {
     if (el) el.value = v;
 }
 function setQtyManual(idx, val) {
+    const p = products[idx];
+    if (p && (p?.disponivel === false || p?.indisponivel === true)) { showToast('🚫 Produto indisponível'); const el = document.getElementById(`qty-${idx}`); if(el) el.value = 0; quantities[idx]=0; return; }
     let v = parseInt(val);
     if (isNaN(v) || v < 0) v = 0;
     if (v > 9999) v = 9999;
@@ -1210,6 +1246,7 @@ document.addEventListener('DOMContentLoaded', ()=>{ const btn=document.getElemen
 function addToCart(idx) {
     const p = products[idx];
     if (!p) { showToast('Produto não encontrado'); return; }
+    if (p?.disponivel === false || p?.indisponivel === true) { showToast('🚫 Produto indisponível no momento'); return; }
     const qty = quantities[idx] || 0;
     if (qty <= 0) { showToast('Selecione a quantidade!'); return; }
     const existing = cart.find(c => c.name === p.name);
@@ -1785,20 +1822,23 @@ function saveProduct() {
     const price = parseFloat(priceVal);
     const category = document.getElementById('prodCategory')?.value || 'Outros';
     const image = document.getElementById('imagePreview')?.dataset.image || '';
+    const indisponivel = document.getElementById('prodIndisponivel')?.checked || false;
     if (!name || isNaN(price)) { showToast('❌ Preencha nome e preço!'); return; }
     if (editingIndex >= 0) {
-        products[editingIndex] = { name, price, category, image: image || products[editingIndex].image || '' };
-        showToast('✓ Produto atualizado!');
+        const oldImg = products[editingIndex]?.image || '';
+        products[editingIndex] = { name, price, category, image: image || oldImg, disponivel: !indisponivel, indisponivel: indisponivel };
+        showToast(indisponivel ? '✓ Produto atualizado como INDISPONÍVEL!' : '✓ Produto atualizado!');
         editingIndex = -1;
     } else {
-        products.push({ name, price, category, image });
-        showToast('✓ Produto adicionado!');
+        products.push({ name, price, category, image, disponivel: !indisponivel, indisponivel: indisponivel });
+        showToast(indisponivel ? '✓ Produto adicionado como INDISPONÍVEL!' : '✓ Produto adicionado!');
     }
     quantities = {};
     saveProducts(); renderProducts(); renderAdminList();
     const nameEl=document.getElementById('prodName'); if(nameEl) nameEl.value='';
     const priceEl=document.getElementById('prodPrice'); if(priceEl) priceEl.value='';
     const fileEl=document.getElementById('prodImage'); if(fileEl) fileEl.value='';
+    const checkEl=document.getElementById('prodIndisponivel'); if(checkEl) checkEl.checked=false;
     const preview=document.getElementById('imagePreview'); if(preview){ preview.innerHTML=''; delete preview.dataset.image; }
 }
 
@@ -1806,16 +1846,37 @@ function renderAdminList() {
     const list = document.getElementById('adminProductList');
     if (!list) return;
     if (products.length === 0) { list.innerHTML = '<p style="padding:20px; text-align:center; color:#999;">Nenhum produto <br><button onclick="resetToDefaultProducts()" class="btn-primary" style="margin-top:10px;width:auto;">🔄 Restaurar</button></p>'; return; }
-    list.innerHTML = products.map((p, i) => `
-        <div class="admin-product-item">
+    list.innerHTML = products.map((p, i) => {
+        const isIndisponivel = p?.disponivel === false || p?.indisponivel === true;
+        return `
+        <div class="admin-product-item ${isIndisponivel ? 'indisponivel' : ''}">
             ${p.image ? `<img src="${escapeAttr(p.image)}" onerror="this.style.display='none'">` : '<div style="width:50px;height:50px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;border-radius:6px;">📦</div>'}
-            <div class="info"><h4>${escapeHtml(p.name)}</h4><p>R$ ${Number(p.price || 0).toFixed(2).replace('.', ',')} • ${escapeHtml(p.category)}</p></div>
+            <div class="info"><h4>${escapeHtml(p.name)} ${isIndisponivel ? '<span class="badge-admin-indisponivel">INDISPONÍVEL</span>' : ''}</h4><p>R$ ${Number(p.price || 0).toFixed(2).replace('.', ',')} • ${escapeHtml(p.category)} ${isIndisponivel ? '• 🚫 Indisponível' : ''}</p></div>
             <div class="actions">
+                <button class="btn-toggle-disponivel ${!isIndisponivel ? '' : 'disponivel'}" onclick="toggleDisponivel(${i})" title="${isIndisponivel ? 'Tornar disponível' : 'Tornar indisponível'}">${isIndisponivel ? '✅' : '🚫'}</button>
                 <button class="btn-edit" onclick="editProduct(${i})">✏️</button>
                 <button class="btn-delete" onclick="deleteProduct(${i})">🗑</button>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
+
+function toggleDisponivel(i){
+    const p = products[i];
+    if (!p) return;
+    const isCurrentlyIndisponivel = p?.disponivel === false || p?.indisponivel === true;
+    if(isCurrentlyIndisponivel){
+        p.disponivel = true;
+        p.indisponivel = false;
+        showToast('✅ Produto agora DISPONÍVEL: ' + (p.name||'').substring(0,20));
+    } else {
+        p.disponivel = false;
+        p.indisponivel = true;
+        showToast('🚫 Produto marcado como INDISPONÍVEL: ' + (p.name||'').substring(0,20));
+    }
+    saveProducts(); renderProducts(); renderAdminList();
+}
+
 
 function editProduct(i) {
     const p = products[i];
@@ -1823,6 +1884,7 @@ function editProduct(i) {
     const nameEl=document.getElementById('prodName'); if(nameEl) nameEl.value=p.name;
     const priceEl=document.getElementById('prodPrice'); if(priceEl) priceEl.value=p.price;
     const catEl=document.getElementById('prodCategory'); if(catEl) catEl.value=p.category;
+    const checkEl=document.getElementById('prodIndisponivel'); if(checkEl) checkEl.checked = (p?.disponivel === false || p?.indisponivel === true);
     const preview=document.getElementById('imagePreview');
     if (p.image && preview) {
         preview.innerHTML = `<img src="${escapeAttr(p.image)}" style="max-width:100px; border-radius:8px;">`;
@@ -1832,7 +1894,8 @@ function editProduct(i) {
     document.querySelectorAll('.admin-tab').forEach((t, idx) => t.classList.toggle('active', idx === 0));
     document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-add')?.classList.add('active');
-    showToast('Editando produto...');
+    const isInd = (p?.disponivel === false || p?.indisponivel === true);
+    showToast(isInd ? 'Editando produto INDISPONÍVEL...' : 'Editando produto...');
 }
 
 function deleteProduct(i) {
@@ -2168,6 +2231,7 @@ function addPromoToCart(realIdx){
   const cfg = getPromoConfig();
   const p = products[realIdx];
   if(!p){ showToast('Produto não encontrado'); return; }
+  if (p?.disponivel === false || p?.indisponivel === true) { showToast('🚫 Produto indisponível no momento'); return; }
   const buyQty = window.promoBuyQty[realIdx] || 0;
   if(buyQty <= 0){ showToast('Selecione a quantidade!'); return; }
   const stock = (cfg.quantities && cfg.quantities[realIdx]) || 9999;
