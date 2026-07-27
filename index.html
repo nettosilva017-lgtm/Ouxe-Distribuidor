@@ -14,15 +14,10 @@
 <meta name="description" content="OUXE Distribuidor - Produtos naturais, cosméticos e alimentos">
 
 <meta property="og:title" content="OUXE Distribuidor - Faça seu pedido aqui">
-<meta property="og:description" content="🛒 Clique na imagem e faça seu pedido - Produtos naturais e cosméticos">
+<meta property="og:description" content="Faça seu pedido, Milionario(a), rico(a), Aqui 👉 - OUXE Distribuidor">
 <meta property="og:image" content="https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/logo.jpg">
-<meta property="og:image:secure_url" content="https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/logo.jpg">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
 <meta property="og:url" content="https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="OUXE Distribuidor">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/logo.jpg">
 
@@ -356,6 +351,192 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
 }
 .product-card.promo-card .product-info { background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(243,231,210,.5) 100%); }
 
+
+/* ===== BOTÃO COMPARTILHAR EMBAIXO - CANTO DIREITO ===== */
+
+
+/* ===== CARTAZ PROMOÇÃO ESTILO ASSAÍ - 7 ITENS ===== */
+.promo-poster {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 3px solid #1E4630;
+  box-shadow: 0 8px 30px rgba(0,0,0,.12);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.promo-poster-header {
+  background: linear-gradient(135deg, #1E4630 0%, #2F7A52 60%, #1E4630 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.promo-poster-header::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: white;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.promo-poster-logo {
+  width: 72px;
+  height: 72px;
+  background: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #1E4630;
+  font-family: Fraunces, serif;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,.8);
+}
+.promo-poster-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+.promo-poster-titles { flex:1; min-width:200px; }
+.promo-poster-titles h2 { font-size: 22px; font-weight: 900; letter-spacing:.5px; line-height:1.1; margin:0; text-transform: uppercase; }
+.promo-poster-titles h2 span { color: #FFD54F; }
+.promo-poster-titles p { font-size: 12px; opacity:.9; margin-top:2px; font-weight:600; letter-spacing:1px; }
+.promo-poster-validade {
+  background: #FFD54F;
+  color: #1E4630;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  line-height:1.2;
+  flex-shrink:0;
+}
+.promo-poster-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: 28px 12px 12px;
+  background: white;
+}
+@media (max-width: 900px){ .promo-poster-grid{ grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px){ .promo-poster-grid{ grid-template-columns: repeat(2, 1fr); } }
+.promo-poster-item {
+  border: 1px solid #E8E8E8;
+  padding: 12px 10px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  position: relative;
+  min-height: 210px;
+}
+.promo-poster-item:nth-child(7) { grid-column: span 2; }
+@media (max-width: 600px){ .promo-poster-item:nth-child(7){ grid-column: span 2; } }
+@media (min-width: 601px) and (max-width: 900px){ .promo-poster-item:nth-child(7){ grid-column: span 1; } }
+.promo-poster-item-img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  background: #fafafa;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  padding: 6px;
+  border: 1px solid #f0f0f0;
+}
+.promo-poster-item-name {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #222;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+.promo-poster-item-price {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #C62828;
+  line-height:1;
+}
+.promo-poster-item-price small { font-size: 10px; color: #666; font-weight:600; display:block; margin-top:2px; }
+.promo-poster-footer {
+  background: #F5F5F5;
+  border-top: 2px solid #1E4630;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #555;
+}
+.promo-poster-footer strong { color: #1E4630; }
+.promo-poster-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #888;
+}
+
+
+/* Botão compartilhar pequeno no topo junto com categorias */
+.cat-share-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #1E4630;
+  border: 1.5px solid #DEE4D6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s ease;
+  position: sticky;
+  right: 0;
+  margin-left: 4px;
+  box-shadow: -4px 0 8px rgba(255,255,255,.9);
+  z-index: 2;
+}
+.cat-share-btn:hover { background:#1E4630; color:white; border-color:#1E4630; }
+.cat-share-btn svg { width:14px; height:14px; }
+
+
+.promo-date-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+.promo-date-row label { font-size:12px; font-weight:600; color:#1E4630; display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px; }
+.promo-date-row input[type=date] { padding:8px 10px; border-radius:8px; border:1.5px solid #DEE4D6; font-size:13px; }
+.promo-qty-input { width:70px; padding:6px 8px; border-radius:6px; border:1.5px solid #ddd; font-size:12px; text-align:center; }
+
+
+/* Cupons */
+.coupon-item { display:flex; gap:10px; align-items:center; padding:10px; border:1px solid #eee; border-radius:8px; margin-bottom:8px; background:#fff; }
+.coupon-code { font-weight:800; color:#1E4630; background:#E8F5E9; padding:4px 8px; border-radius:6px; font-size:13px; }
+.promo-price-input { width:90px; padding:6px 8px; border-radius:6px; border:1.5px solid #FFD54F; font-size:12px; background:#FFF8E1; }
+.cart-coupon-box { background:#F0F3E9; border:1.5px dashed #2F7A52; border-radius:10px; padding:12px; margin:12px 0; }
+.cart-coupon-row { display:flex; gap:8px; }
+.cart-coupon-row input { flex:1; padding:10px; border-radius:8px; border:1.5px solid #ddd; font-size:13px; text-transform:uppercase; }
+.cart-coupon-row button { padding:10px 14px; border-radius:8px; border:none; background:#1E4630; color:white; font-weight:700; cursor:pointer; }
+.coupon-applied { background:#E8F5E9; color:#1E4630; padding:8px 10px; border-radius:8px; font-size:12px; margin-top:8px; display:flex; justify-content:space-between; align-items:center; }
+
+
+.promo-buy-row { display:flex; gap:6px; align-items:center; justify-content:center; margin-top:8px; width:100%; }
+.promo-qty-btn { width:28px; height:28px; border-radius:50%; border:1px solid #1E4630; background:white; color:#1E4630; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.promo-qty-input { width:40px; height:28px; text-align:center; border:1px solid #ddd; border-radius:6px; font-size:12px; font-weight:600; }
+.promo-add-btn { background:#1E4630; color:white; border:none; padding:6px 12px; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; flex:1; }
+.promo-add-btn:hover { background:#2F7A52; }
+.promo-stock { font-size:10px; color:#666; margin-top:4px; }
+
 </style>
 </head>
 <body>
@@ -369,9 +550,6 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
                 <p id="empresaSubDisplay">Produtos naturais e cosméticos</p>
             </div>
         </div>
-        <button class="nav-share-btn icon-only" id="navShareBtn" onclick="handleShareOuxe()" title="Compartilhar loja - Faça seu pedido aqui">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.5 10.5l7-3M8.5 13.5l7 3"/></svg>
-        </button>
         <button class="nav-install-btn" id="navInstallBtn" title="Instalar App">
             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/>
@@ -417,6 +595,7 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <label for="customerCity">Cidade</label>
             <input type="text" id="customerCity" placeholder="Digite a cidade" autocomplete="address-level2">
         </div>
+        <div id="cartSubtotal" style="font-size:12px; color:#666; text-align:right; margin-bottom:6px; display:none;"></div>
         <div class="cart-total">Total: R$ <span id="cartTotal">0,00</span></div>
         <div class="cart-actions">
             <button class="btn-whats" onclick="sendWhatsAppWithImage()">📱 Enviar Pedido</button>
@@ -446,7 +625,8 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <button class="admin-tab" onclick="switchTab('import', this)">📋 Copiar Tabela</button>
             <button class="admin-tab" onclick="switchTab('empresa', this)">🏢 Empresa</button>
             <button class="admin-tab" onclick="switchTab('backup', this)">💾 Backup</button>
-            <button class="admin-tab" onclick="switchTab('tabela', this)">🏷️ Tabela Preços</button>
+            <button class="admin-tab" onclick="switchTab('promocao', this)">🔥 Promoção (7)</button>
+            <button class="admin-tab" onclick="switchTab('cupons', this)">🎟️ Cupons</button>
         </div>
         <div class="admin-panel active" id="panel-add">
             <div class="form-group"><label>Nome do produto</label><input type="text" id="prodName" placeholder="Ex: Sabonete de Coco"></div>
@@ -483,6 +663,43 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
             <div class="form-group"><label>Logo da empresa</label><input type="file" id="empresaLogoFile" accept="image/*"><div id="empresaLogoPreview" style="margin-top:8px;"></div></div>
             <div style="display:flex;gap:8px;"><button class="btn-primary" onclick="saveEmpresa()" style="flex:1;">💾 Salvar Empresa</button><button class="btn-primary" onclick="removeEmpresaLogo()" style="background:#666;flex:0.5;">🗑 Remover logo</button></div>
         </div>
+        <div class="admin-panel" id="panel-promocao">
+            <p style="font-size:13px;color:#666;margin-bottom:10px;">Escolha <b>até 7 produtos</b> para aparecer no cartaz da categoria Promoção. Defina quantidade em promoção e validade.</p>
+            <div style="background:#FFF8E1; border:1px solid #FFD54F; border-radius:8px; padding:8px 10px; font-size:12px; color:#5D4037; margin-bottom:12px;">
+                <span id="promoCountInfo">0/7 selecionados</span> • O cartaz será exibido no menu Promoção
+            </div>
+            <div class="promo-date-row">
+                <label>📅 Data Início<input type="date" id="promoStartDate" onchange="setPromoDates()"></label>
+                <label>📅 Data Fim<input type="date" id="promoEndDate" onchange="setPromoDates()"></label>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                <input type="text" id="promoSearch" placeholder="🔎 Filtrar produtos..." oninput="renderPromoAdminList()" style="flex:1; padding:10px; border-radius:8px; border:1.5px solid #ddd;">
+                <button class="btn-primary" onclick="limparPromo()" style="background:#999; width:auto; padding:10px 14px;">🗑 Limpar</button>
+            </div>
+            <div id="promoAdminList" style="max-height:45vh; overflow-y:auto; border:1px solid #eee; border-radius:10px;"></div>
+            <button class="btn-primary" onclick="salvarPromo()" style="margin-top:12px; background:#1E4630;">💾 Salvar Cartaz Promoção</button>
+            <p style="font-size:11px; color:#888; margin-top:8px;">Dica: Selecione produtos com imagem e defina a quantidade em promoção para cada um.</p>
+        </div>
+                <div class="admin-panel" id="panel-cupons">
+            <p style="font-size:13px;color:#666;margin-bottom:10px;">Crie cupons de desconto para o cliente digitar no carrinho. O preço da promoção é independente do preço normal.</p>
+            <div style="background:#fff; border:1px solid #DEE4D6; border-radius:10px; padding:12px; margin-bottom:12px;">
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <input type="text" id="cupomCode" placeholder="CÓDIGO (ex: MILIONARIO10)" style="flex:1; min-width:120px; padding:10px; border-radius:8px; border:1.5px solid #ddd; text-transform:uppercase;">
+                    <select id="cupomType" style="padding:10px; border-radius:8px; border:1.5px solid #ddd;">
+                        <option value="percent">% Porcentagem</option>
+                        <option value="fixed">R$ Fixo</option>
+                    </select>
+                    <input type="number" id="cupomValue" placeholder="Valor" min="1" style="width:90px; padding:10px; border-radius:8px; border:1.5px solid #ddd;">
+                    <input type="date" id="cupomExpiry" style="padding:10px; border-radius:8px; border:1.5px solid #ddd;">
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <input type="number" id="cupomMin" placeholder="Pedido mínimo R$ (opcional)" style="flex:1; padding:10px; border-radius:8px; border:1.5px solid #ddd;">
+                    <button class="btn-primary" onclick="addCoupon()" style="width:auto; padding:10px 16px;">➕ Criar Cupom</button>
+                </div>
+            </div>
+            <div id="cupomList" style="max-height:40vh; overflow-y:auto;"></div>
+            <p style="font-size:11px; color:#888; margin-top:8px;">Exemplo: MILIONARIO10 = 10% OFF. Cliente digita no carrinho antes de fechar pedido.</p>
+        </div>
         <div class="admin-panel" id="panel-backup">
             <p style="font-size:13px;color:#666;margin-bottom:12px;">✅ Os produtos agora ficam no arquivo <b>produtos.json</b> e aparecem em <b>todos os terminais</b>. Após adicionar/editar produtos, clique em <b>Exportar produtos.json</b> e substitua o arquivo no GitHub.</p>
             <div id="backupStorageInfo" style="font-size:12px;color:#999;margin-bottom:12px;"></div>
@@ -495,34 +712,6 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
                 <input type="file" id="backupFile" accept="application/json">
             </div>
             <button class="btn-primary" onclick="importBackup()" style="background:#43a047;">⬆️ Importar backup</button>
-        </div>
-        <div class="admin-panel" id="panel-tabela">
-            <p style="font-size:13px;color:#666;margin-bottom:12px;">Gere uma imagem da tabela de preços com logo e nome da empresa no topo. Perfeito para enviar no WhatsApp.</p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
-                <div class="form-group" style="flex:1; min-width:140px; margin-bottom:0;">
-                    <label>Categoria</label>
-                    <select id="tabelaCategoria"><option value="Todos">Todos</option><option value="Bebidas">Bebidas</option><option value="Alimentos">Alimentos</option><option value="Limpeza">Limpeza</option><option value="Cosméticos">Cosméticos</option><option value="Produtos Naturais">Produtos Naturais</option><option value="Acessórios">Acessórios</option><option value="Promoção">Promoção</option><option value="Outros">Outros</option></select>
-                </div>
-                <div class="form-group" style="flex:1; min-width:140px; margin-bottom:0;">
-                    <label>Estilo</label>
-                    <select id="tabelaEstilo"><option value="completo">Nome + Preço</option><option value="categoria">Com Categoria</option></select>
-                </div>
-            </div>
-            <div style="background:#F0F3E9; border:1.5px dashed #DEE4D6; border-radius:10px; padding:10px; margin-bottom:12px; font-size:12px; color:#5C6B5E;">
-                <strong style="color:#1E4630;">Topo da imagem:</strong> <span id="tabelaEmpresaInfo">Carregando...</span><br>
-                <span style="font-size:11px;">Usa o logo e nome configurados em 🏢 Empresa</span>
-            </div>
-            <button class="btn-primary" onclick="gerarTabelaPrecosImagem()" style="background:#1E4630; font-size:15px; padding:14px;">📋 Gerar Tabela de Preços (com produtos)</button>
-            <button class="btn-primary" onclick="gerarImagemSimplesCTA()" style="background:#2F7A52; font-size:15px; padding:14px; margin-top:8px;">✨ Gerar Imagem Simples - Só Logo + Faça seu Pedido</button>
-            <p style="font-size:11px;color:#888;margin-top:8px;text-align:center;">A segunda opção gera só a logo + nome + botão, sem lista de produtos</p>
-            <div id="tabelaPreviewArea" style="margin-top:14px; display:none;">
-                <p style="font-size:12px;color:#666;margin-bottom:6px;">Prévia:</p>
-                <img id="tabelaPreviewImg" style="width:100%; border-radius:12px; border:1.5px solid #DEE4D6; box-shadow:0 4px 12px rgba(0,0,0,.08);">
-                <div style="display:flex; gap:8px; margin-top:10px;">
-                    <button class="btn-primary" onclick="baixarTabelaImagem()" style="flex:1; background:#2F7A52;">⬇️ Baixar Imagem</button>
-                    <button class="btn-primary" onclick="compartilharTabelaImagem()" style="flex:1;">📤 Compartilhar</button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -544,21 +733,22 @@ h1, h2, h3, .brand-face { font-family: 'Fraunces', Georgia, serif; }
       <img src="./logo.jpg" id="sharePreviewImg" alt="OUXE Distribuidor" onerror="this.onerror=null; this.src='./icon-512.png';">
       <div style="flex:1; min-width:0;">
         <strong style="color:var(--forest);">OUXE Distribuidor</strong>
-        <p style="font-size:13px;color:var(--ink-soft);margin-top:3px;">Faça seu pedido aqui</p>
+        <p style="font-size:13px;color:var(--ink-soft);margin-top:3px;">Faça seu pedido, Milionario(a), rico(a), Aqui 👉</p>
         <small style="color:var(--leaf); word-break:break-all; font-size:11.5px;">https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/</small>
       </div>
     </div>
     <div class="share-grid">
-      <button class="share-option" onclick="shareViaWhatsApp()" style="background:#25D366; color:white; border-color:#25D366; grid-column: span 2;"><span>✅</span> WhatsApp - CARTÃO COM IMAGEM CLICÁVEL (recomendado)</button>
+      <button class="share-option" onclick="shareViaWhatsApp()"><span>💬</span> WhatsApp</button>
       <button class="share-option" onclick="shareViaFacebook()"><span>📘</span> Facebook</button>
       <button class="share-option" onclick="copyShareLink()"><span>🔗</span> Copiar Link</button>
-      <button class="share-option" onclick="shareWithImage()"><span>🖼️</span> Enviar Imagem + Link</button>
-      <button class="share-option" onclick="gerarImagemSimplesCTA(); setTimeout(()=>{closeShareModal(); document.getElementById('panel-tabela')?.scrollIntoView(); }, 500)" style="grid-column: span 2;"><span>✨</span> Imagem "Clique e Faça seu Pedido"</button>
+      <button class="share-option" onclick="shareWithImage()"><span>🖼️</span> Com Imagem</button>
     </div>
     <a href="https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/" target="_blank" rel="noopener" class="btn-primary" style="margin-top:14px; text-align:center; display:block; text-decoration:none;">🛒 Faça seu pedido aqui</a>
     <p style="font-size:11px;color:#888;text-align:center;margin-top:10px;">A imagem da logo será enviada junto quando disponível</p>
   </div>
 </div>
+
+
 
 <div id="toast"></div>
 
@@ -772,51 +962,162 @@ function renderCategories() {
         btn.onclick = () => { currentCategory = cat; renderCategories(); renderProducts(); };
         container.appendChild(btn);
     });
+    // Botão compartilhar pequeno no final sequenciando o menu
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'cat-share-btn';
+    shareBtn.title = 'Compartilhar loja';
+    shareBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.5 10.5l7-3M8.5 13.5l7 3"/></svg>';
+    shareBtn.onclick = () => handleShareMilionario();
+    container.appendChild(shareBtn);
 }
 
 // ===== PRODUTOS =====
+
 function renderProducts() {
     const grid = document.getElementById('productsGrid');
-    if (!grid) {
-        console.warn('productsGrid não encontrado no DOM');
-        return;
-    }
-    // FIX: remove OUXE auto preenchido na busca
+    if (!grid) { console.warn('productsGrid não encontrado'); return; }
+
     const searchEl = document.getElementById('searchInput');
     if(searchEl && (searchEl.value.toUpperCase().includes('OUXE') || searchEl.value.toUpperCase().includes('DISTRIBUIDOR'))){
-        // se o valor for exatamente o nome da empresa, limpa
         const upper = searchEl.value.trim().toUpperCase();
         if(upper === 'OUXE' || upper === 'OUXE DISTRIBUIDOR' || upper === 'OUXE DISTRIBUIDOR - PRODUTOS NATURAIS, COSMÉTICOS E ALIMENTOS'){
-            searchEl.value = '';
-            searchTerm = '';
+            searchEl.value = ''; searchTerm = '';
         }
-    }
-    // Promo mode class
-    if(currentCategory === 'Promoção'){
-        grid.classList.add('promo-mode');
-    } else {
-        grid.classList.remove('promo-mode');
     }
 
     if (!products || !Array.isArray(products) || products.length === 0) {
         products = cloneProducts(DEFAULT_PRODUCTS);
     }
+
+    // ===== CASO ESPECIAL: CATEGORIA PROMOÇÃO = CARTAZ =====
+    if(currentCategory === 'Promoção'){
+        grid.classList.remove('promo-mode');
+        grid.innerHTML = '';
+        grid.style.display = 'block';
+
+        // Pega lista de promo salva com datas e quantidades
+        let cfgPromo = { ids:[], quantities:{}, startDate:'', endDate:'' };
+        try{ 
+          const raw = localStorage.getItem('ouxe-promo-config');
+          if(raw) cfgPromo = JSON.parse(raw);
+          else {
+            const oldIds = JSON.parse(localStorage.getItem('ouxe-promo-7') || '[]');
+            cfgPromo.ids = oldIds;
+          }
+        }catch(e){ cfgPromo = { ids:[], quantities:{}, startDate:'', endDate:'' }; }
+        let promoProducts = [];
+        let promoMeta = [];
+        if(cfgPromo.ids && cfgPromo.ids.length > 0){
+            cfgPromo.ids.slice(0,7).forEach(idx=>{
+              const prod = products[idx];
+              if(prod) {
+                promoProducts.push(prod);
+                promoMeta.push({ idx, qty: (cfgPromo.quantities && cfgPromo.quantities[idx]) || 1, promoPrice: (cfgPromo.promoPrices && cfgPromo.promoPrices[idx] !== undefined) ? cfgPromo.promoPrices[idx] : null });
+              }
+            });
+        } else {
+            let filteredPromo = products.filter(p => p.category === 'Promoção');
+            if(filteredPromo.length === 0) filteredPromo = products.filter(p => p.image).slice(0,7);
+            promoProducts = filteredPromo.slice(0,7);
+            promoMeta = promoProducts.map((_,i)=>({ idx: -1, qty: 1 }));
+        }
+
+        const nomeEmpresa = escapeHtml(empresaConfig?.nome || 'Ouxe Distribuidor');
+        const logoHtml = empresaConfig?.logo ? `<img src="${escapeAttr(empresaConfig.logo)}" alt="logo">` : `<span>${escapeHtml(empresaConfig?.logoTexto || 'OU')}</span>`;
+
+        // Usa datas definidas no admin, se não tiver usa hoje +7 dias
+        let dataInicioStr = cfgPromo.startDate;
+        let dataFimStr = cfgPromo.endDate;
+        const hoje = new Date();
+        const dataFimDefault = new Date(); dataFimDefault.setDate(hoje.getDate()+7);
+        const fmt = (d)=> d.toLocaleDateString('pt-BR');
+        const fmtISO = (isoStr)=>{
+          try{ const d = new Date(isoStr+'T12:00:00'); return isNaN(d)? '' : fmt(d); }catch(e){ return '';}
+        };
+        let validade = '';
+        if(dataInicioStr && dataFimStr){
+          validade = `PREÇOS VÁLIDOS DE:<br>${fmtISO(dataInicioStr)} a ${fmtISO(dataFimStr)}`;
+        } else {
+          validade = `PREÇOS VÁLIDOS DE:<br>${fmt(hoje)} a ${fmt(dataFimDefault)}`;
+        }
+
+        let gridItemsHtml = '';
+        if(promoProducts.length === 0){
+            gridItemsHtml = `<div class="promo-poster-empty"><p style="font-size:16px; font-weight:700; color:#1E4630;">Nenhum produto na promoção</p><p style="font-size:13px; margin-top:6px; color:#666;">Em breve novas ofertas</p></div>`;
+        } else {
+            // inicializa quantidades temporárias para compra na promoção
+            if(!window.promoBuyQty) window.promoBuyQty = {};
+            gridItemsHtml = promoProducts.map((p, i)=>{
+                const safeName = escapeHtml(p.name);
+                const meta = promoMeta[i] || { qty: 1, promoPrice: null, idx: -1 };
+                const stock = meta.qty || 1;
+                const promoPrice = meta.promoPrice !== null && meta.promoPrice !== undefined ? meta.promoPrice : null;
+                const realIdx = meta.idx;
+                const img = p.image ? `<img class="promo-poster-item-img" src="${escapeAttr(p.image)}" alt="${safeName}">` : `<div class="promo-poster-item-img" style="display:flex;align-items:center;justify-content:center; font-size:30px;">📦</div>`;
+                const normalPrice = Number(p.price||0);
+                const priceToShow = promoPrice !== null && promoPrice > 0 ? promoPrice : normalPrice;
+                const preco = `R$ ${Number(priceToShow).toFixed(2).replace('.', ',')}`;
+                const normalPriceHtml = promoPrice !== null && promoPrice > 0 && promoPrice !== normalPrice ? `<div style="font-size:10px; color:#999; text-decoration:line-through;">De R$ ${normalPrice.toFixed(2).replace('.',',')}</div>` : '';
+                const buyQty = window.promoBuyQty[realIdx] !== undefined ? window.promoBuyQty[realIdx] : 0;
+                const stockTxt = stock > 1 ? `<div class="promo-stock">${stock} un. em promoção</div>` : '';
+                return `<div class="promo-poster-item">
+                  ${img}
+                  <div class="promo-poster-item-name">${safeName}</div>
+                  ${normalPriceHtml}
+                  <div class="promo-poster-item-price">${preco}<small>CADA</small></div>
+                  ${stockTxt}
+                  <div class="promo-buy-row">
+                    <button class="promo-qty-btn" onclick="changePromoBuyQty(${realIdx}, -1)">−</button>
+                    <input type="number" class="promo-qty-input" id="promo-qty-${realIdx}" value="${buyQty}" min="0" max="${stock}" onchange="setPromoBuyQty(${realIdx}, this.value)">
+                    <button class="promo-qty-btn" onclick="changePromoBuyQty(${realIdx}, 1)">+</button>
+                  </div>
+                  <button class="promo-add-btn" onclick="addPromoToCart(${realIdx})">+ Carrinho</button>
+                </div>`;
+            }).join('');
+            // Completa até 7 com placeholder se precisar
+            if(promoProducts.length < 7){
+                for(let i=promoProducts.length; i<7; i++){
+                    gridItemsHtml += `<div class="promo-poster-item" style="background:#fafafa; opacity:.6;"><div class="promo-poster-item-img" style="display:flex;align-items:center;justify-content:center; font-size:24px;">➕</div><div class="promo-poster-item-name" style="color:#999;">Vazio<br>Adicione no admin</div></div>`;
+                }
+            }
+        }
+
+        grid.innerHTML = `
+        <div class="promo-poster">
+            <div class="promo-poster-header">
+                <div class="promo-poster-logo">${logoHtml}</div>
+                <div class="promo-poster-titles">
+                    <h2>ESPECIAL <span>PROMOÇÃO ${escapeHtml((empresaConfig?.nome || 'OUXE').toUpperCase())}</span></h2>
+                    <p>ACELERE SUA ECONOMIA LEVANDO AS MELHORES OFERTAS!</p>
+                </div>
+                <div class="promo-poster-validade">${validade}</div>
+            </div>
+            <div class="promo-poster-grid">
+                ${gridItemsHtml}
+            </div>
+            <div class="promo-poster-footer">
+                <span><strong>${nomeEmpresa}</strong> • Produtos naturais e cosméticos</span>
+                <span>📍 Faça seu pedido pelo WhatsApp • Ofertas válidas até durarem os estoques</span>
+            </div>
+        </div>
+`;
+        return;
+    }
+
+    // ===== RENDER NORMAL =====
+    grid.style.display = '';
+    grid.classList.remove('promo-mode');
     grid.innerHTML = '';
-    
     console.log(`Renderizando ${products.length} produtos, categoria: ${currentCategory}, busca: "${searchTerm}"`);
-    
     let filtered = currentCategory === 'Todos' ? products : products.filter(p => p.category === currentCategory);
     if (searchTerm) {
         const q = normalizeText(searchTerm);
         filtered = filtered.filter(p => normalizeText(p.name).includes(q));
     }
-    // ORDEM ALFABETICA - requisito
     filtered = filtered.slice().sort((a,b) => a.name.localeCompare(b.name, 'pt-BR'));
 
     if (filtered.length === 0) {
-        const msg = searchTerm
-            ? `Nenhum produto encontrado para "${escapeHtml(searchTerm)}"`
-            : `Nenhum produto na categoria "${escapeHtml(currentCategory)}"`;
+        const msg = searchTerm ? `Nenhum produto encontrado para "${escapeHtml(searchTerm)}"` : `Nenhum produto na categoria "${escapeHtml(currentCategory)}"`;
         grid.innerHTML = `<div class="empty-state"><div class="empty-icon" style="font-size:38px;">🔎</div><h3 style="font-size:15px;">${msg}</h3><p>Tente outro termo ou volte para "Todos".</p><button onclick="clearSearch(); currentCategory='Todos'; renderCategories(); renderProducts();" class="btn-primary" style="width:auto;padding:10px 22px;margin-top:8px;">Ver todos</button></div>`;
         return;
     }
@@ -829,15 +1130,12 @@ function renderProducts() {
         const safeImage = p.image ? escapeAttr(p.image) : '';
         const imgHtml = p.image ? `<img src="${safeImage}" alt="${safeName}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='📦';">` : '📦';
         const card = document.createElement('div');
-        const isPromo = currentCategory === 'Promoção';
-        card.className = isPromo ? 'product-card promo-card' : 'product-card';
+        card.className = 'product-card';
         card.style.animationDelay = (Math.min(visualIdx, 20) * 18) + 'ms';
-        const promoBadge = isPromo ? '<span class="promo-badge">🔥 PROMOÇÃO</span>' : '';
         card.innerHTML = `
-            <div class="product-img">${promoBadge}${imgHtml}</div>
+            <div class="product-img">${imgHtml}</div>
             <div class="product-info">
                 <div class="product-name" title="${safeName}">${safeName}</div>
-                ${isPromo ? '<div style="font-size:11px;color:#9C6B28;font-weight:700;margin-top:2px;">CARTAZ PROMOCIONAL</div>' : ''}
                 <div class="product-price">R$ ${Number(p.price || 0).toFixed(2).replace('.', ',')}</div>
                 <div class="qty-control">
                     <button class="qty-btn" onclick="changeQty(${realIdx}, -1)">−</button>
@@ -952,10 +1250,90 @@ function updateCartBadge() {
 function openCart() { renderCart(); document.getElementById('cartModal')?.classList.add('active'); }
 function closeCart() { document.getElementById('cartModal')?.classList.remove('active'); }
 
+// ===== CUPONS LOGIC =====
+let appliedCoupon = null;
+function getCoupons(){
+  try{ return JSON.parse(localStorage.getItem('ouxe-cupons')||'[]'); }catch(e){ return []; }
+}
+function saveCoupons(list){ localStorage.setItem('ouxe-cupons', JSON.stringify(list)); }
+
+function addCoupon(){
+  const codeEl = document.getElementById('cupomCode');
+  const typeEl = document.getElementById('cupomType');
+  const valEl = document.getElementById('cupomValue');
+  const expEl = document.getElementById('cupomExpiry');
+  const minEl = document.getElementById('cupomMin');
+  let code = (codeEl?.value||'').trim().toUpperCase();
+  if(!code){ showToast('Digite o código do cupom'); return; }
+  let type = typeEl?.value || 'percent';
+  let value = parseFloat(valEl?.value||'0');
+  if(isNaN(value) || value<=0){ showToast('Valor inválido'); return; }
+  let expiry = expEl?.value || '';
+  let min = parseFloat(minEl?.value||'0')||0;
+  const list = getCoupons();
+  if(list.find(c=>c.code===code)){ showToast('Cupom já existe'); return; }
+  list.push({ code, type, value, expiry, min });
+  saveCoupons(list);
+  if(codeEl) codeEl.value=''; if(valEl) valEl.value=''; if(expEl) expEl.value=''; if(minEl) minEl.value='';
+  renderCouponAdminList();
+  showToast('✅ Cupom criado: '+code);
+}
+
+function deleteCoupon(code){
+  if(!confirm('Excluir cupom '+code+'?')) return;
+  let list = getCoupons();
+  list = list.filter(c=>c.code!==code);
+  saveCoupons(list);
+  renderCouponAdminList();
+  showToast('🗑 Cupom removido');
+}
+
+function renderCouponAdminList(){
+  const el = document.getElementById('cupomList');
+  if(!el) return;
+  const list = getCoupons();
+  if(list.length===0){ el.innerHTML='<p style="padding:20px; text-align:center; color:#999;">Nenhum cupom criado</p>'; return; }
+  el.innerHTML = list.map(c=>{
+    const desc = c.type==='percent' ? `${c.value}% OFF` : `R$ ${Number(c.value).toFixed(2).replace('.',',')} OFF`;
+    const exp = c.expiry ? `Validade: ${c.expiry.split('-').reverse().join('/')}` : 'Sem validade';
+    const minTxt = c.min ? ` | Mín: R$ ${Number(c.min).toFixed(2).replace('.',',')}` : '';
+    return `<div class="coupon-item"><span class="coupon-code">${escapeHtml(c.code)}</span><div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600;">${desc}</div><div style="font-size:11px; color:#666;">${exp}${minTxt}</div></div><button onclick="deleteCoupon('${escapeAttr(c.code)}')" style="background:#ffebee; color:#c62828; border:none; padding:6px 10px; border-radius:6px; cursor:pointer;">🗑</button></div>`;
+  }).join('');
+}
+
+function applyCouponCode(){
+  const input = document.getElementById('couponInput');
+  const code = (input?.value||'').trim().toUpperCase();
+  if(!code){ showToast('Digite o cupom'); return; }
+  const list = getCoupons();
+  const found = list.find(c=>c.code===code);
+  if(!found){ showToast('❌ Cupom inválido'); appliedCoupon=null; renderCart(); return; }
+  if(found.expiry){
+    const today = new Date().toISOString().slice(0,10);
+    if(found.expiry < today){ showToast('❌ Cupom expirado'); appliedCoupon=null; renderCart(); return; }
+  }
+  const total = cart.reduce((s,c)=> s + (c.qty*Number(c.price||0)),0);
+  if(found.min && total < found.min){ showToast(`❌ Pedido mínimo R$ ${Number(found.min).toFixed(2).replace('.',',')}`); return; }
+  appliedCoupon = found;
+  showToast(`✅ Cupom ${found.code} aplicado!`);
+  renderCart();
+}
+
+function removeAppliedCoupon(){ appliedCoupon=null; const inp=document.getElementById('couponInput'); if(inp) inp.value=''; renderCart(); showToast('Cupom removido'); }
+
+function calculateDiscount(total){
+  if(!appliedCoupon) return 0;
+  if(appliedCoupon.type==='percent'){ return total * (appliedCoupon.value/100); }
+  else { return Math.min(appliedCoupon.value, total); }
+}
+
 function renderCart() {
     const container = document.getElementById('cartItems');
     if (!container) return;
-    if (cart.length === 0) { container.innerHTML = '<div class="empty-state" style="padding:30px 20px;"><div class="empty-icon" style="font-size:34px;">🧺</div><h3 style="font-size:15px;">Seu carrinho está vazio</h3><p style="margin-bottom:0;">Adicione produtos do catálogo para montar o pedido.</p></div>'; }
+    if (cart.length === 0) { 
+      container.innerHTML = '<div class="empty-state" style="padding:30px 20px;"><div class="empty-icon" style="font-size:34px;">🧺</div><h3 style="font-size:15px;">Seu carrinho está vazio</h3><p style="margin-bottom:0;">Adicione produtos do catálogo para montar o pedido.</p></div>';
+      appliedCoupon=null;
+    }
     else {
         container.innerHTML = cart.map((c, i) => `
             <div class="cart-item">
@@ -965,11 +1343,31 @@ function renderCart() {
                     <p>${c.qty}x R$ ${Number(c.price || 0).toFixed(2).replace('.', ',')} = R$ ${(c.qty * Number(c.price || 0)).toFixed(2).replace('.', ',')}</p>
                 </div>
                 <button class="cart-item-remove" onclick="removeFromCart(${i})">×</button>
-            </div>`).join('');
+            </div>`).join('') + `
+            <div class="cart-coupon-box">
+              <div style="font-size:12px; font-weight:700; color:#1E4630; margin-bottom:6px;">🎟️ Tem cupom? Digite aqui:</div>
+              <div class="cart-coupon-row">
+                <input type="text" id="couponInput" placeholder="CUPOM" value="${appliedCoupon?escapeAttr(appliedCoupon.code):''}">
+                ${appliedCoupon ? `<button onclick="removeAppliedCoupon()" style="background:#999;">✕</button>` : `<button onclick="applyCouponCode()">Aplicar</button>`}
+              </div>
+              ${appliedCoupon ? `<div class="coupon-applied"><span>✅ Cupom <b>${escapeHtml(appliedCoupon.code)}</b> aplicado: ${appliedCoupon.type==='percent'? appliedCoupon.value+'% OFF' : 'R$ '+Number(appliedCoupon.value).toFixed(2).replace('.',',')+' OFF'}</span><span style="cursor:pointer; font-weight:800;" onclick="removeAppliedCoupon()">✕</span></div>` : ''}
+            </div>`;
     }
     const total = cart.reduce((s, c) => s + (c.qty * Number(c.price || 0)), 0);
+    const discount = calculateDiscount(total);
+    const totalFinal = Math.max(0, total - discount);
     const totalEl = document.getElementById('cartTotal');
-    if (totalEl) totalEl.textContent = total.toFixed(2).replace('.', ',');
+    if (totalEl) totalEl.textContent = totalFinal.toFixed(2).replace('.', ',');
+    const subtotalEl = document.getElementById('cartSubtotal');
+    if(subtotalEl){
+      if(discount>0){
+        subtotalEl.innerHTML = `Subtotal: R$ ${total.toFixed(2).replace('.',',')}<br><span style="color:#2e7d32; font-weight:700;">Desconto cupom: - R$ ${discount.toFixed(2).replace('.',',')}</span>`;
+        subtotalEl.style.display='block';
+      } else {
+        subtotalEl.style.display='none';
+      }
+    }
+    // atualiza mensagem do WhatsApp também
 }
 
 function removeFromCart(i) { cart.splice(i, 1); saveCart(); updateCartBadge(); renderCart(); }
@@ -979,6 +1377,8 @@ function clearCart() { if (confirm('Limpar todo o carrinho?')) { cart = []; save
 function sendWhatsAppWithImage() {
     const WHATSAPP_NUMBER = '5575981236160';
     if (cart.length === 0) { showToast('Carrinho vazio!'); return; }
+    // verifica cupom aplicado
+    if(typeof appliedCoupon !== 'undefined' && appliedCoupon){ /* cupom já validado */ }
 
     const customerName = document.getElementById('customerName')?.value.trim() || '';
     const customerCity = document.getElementById('customerCity')?.value.trim() || '';
@@ -1074,13 +1474,30 @@ function sendWhatsAppWithImage() {
         y += rowH;
     });
     
-    const total = cart.reduce((s, c) => s + (c.qty * Number(c.price||0)), 0);
+    const totalBruto = cart.reduce((s, c) => s + (c.qty * Number(c.price||0)), 0);
+    const descontoCupom = (typeof calculateDiscount === 'function' ? calculateDiscount(totalBruto) : 0);
+    const total = Math.max(0, totalBruto - descontoCupom);
+    
+    // Se tem desconto, mostra subtotal e desconto
+    let footerY = y + 10;
+    if(descontoCupom > 0){
+      ctx.fillStyle = '#333';
+      ctx.font = '14px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillText('Subtotal: R$ ' + totalBruto.toFixed(2).replace('.', ','), 750, footerY + 15);
+      ctx.fillStyle = '#2e7d32';
+      ctx.font = 'bold 14px Arial';
+      const cupomTxt = (typeof appliedCoupon !== 'undefined' && appliedCoupon) ? `Cupom ${appliedCoupon.code}` : 'Desconto';
+      ctx.fillText(`${cupomTxt}: - R$ ${descontoCupom.toFixed(2).replace('.', ',')}`, 750, footerY + 35);
+      footerY += 40;
+    }
+    
     ctx.fillStyle = '#2e7d32';
-    ctx.fillRect(30, y + 10, W - 60, 50);
+    ctx.fillRect(30, footerY, W - 60, 50);
     ctx.fillStyle = 'white';
     ctx.font = 'bold 20px Arial';
     ctx.textAlign = 'right';
-    ctx.fillText('TOTAL: R$ ' + total.toFixed(2).replace('.', ','), 750, y + 42);
+    ctx.fillText('TOTAL: R$ ' + total.toFixed(2).replace('.', ','), 750, footerY + 32);
     
     ctx.fillStyle = '#999';
     ctx.font = '12px Arial';
@@ -1094,6 +1511,14 @@ function sendWhatsAppWithImage() {
     cart.forEach(c=>{
         msg += `${c.qty}x ${c.name} - R$ ${(c.qty*Number(c.price||0)).toFixed(2).replace('.',',')}%0A`;
     });
+    msg += `%0A`;
+    if(totalBruto > 0){
+      msg += `Subtotal: R$ ${totalBruto.toFixed(2).replace('.',',')}%0A`;
+    }
+    if(descontoCupom>0 && appliedCoupon){
+      const tipoDesc = appliedCoupon.type==='percent' ? `${appliedCoupon.value}% OFF` : `R$ ${Number(appliedCoupon.value).toFixed(2).replace('.',',')} OFF`;
+      msg += `Cupom ${appliedCoupon.code} (${tipoDesc}): - R$ ${descontoCupom.toFixed(2).replace('.',',')}%0A`;
+    }
     msg += `%0A*TOTAL: R$ ${total.toFixed(2).replace('.',',')}*%0A`;
 
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
@@ -1577,585 +2002,200 @@ function importProducts() {
 }
 
 
-
-// ===== COMPARTILHAMENTO CORRIGIDO - IMAGEM CLICÁVEL DE VERDADE =====
-const OUXE_SITE_URL = 'https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/';
-const OUXE_SHARE_TITLE = 'OUXE Distribuidor - Faça seu pedido aqui';
-const OUXE_SHARE_TEXT = '🛒 Clique na imagem e faça seu pedido - OUXE Distribuidor';
-
-async function gerarBlobImagemSimplesParaShare(){
-  return new Promise(async (resolve)=>{
-    try{
-      const W = 1080;
-      const H = 1350;
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0,0,W,H);
-      ctx.fillStyle = '#F0F3E9';
-      ctx.fillRect(0,0,W,500);
-      const grad = ctx.createLinearGradient(0,0,W,0);
-      grad.addColorStop(0, '#2F7A52');
-      grad.addColorStop(1, '#1E4630');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0,0,W,14);
-      let logoImg = null;
-      if(empresaConfig?.logo){
-        logoImg = await loadImageFromSrc(empresaConfig.logo);
-      }
-      if(!logoImg){
-        try{ logoImg = await loadImageFromSrc('./logo.jpg'); }catch(e){}
-        if(!logoImg){ try{ logoImg = await loadImageFromSrc('./icon-512.png'); }catch(e){} }
-      }
-      const logoSize = 420;
-      const logoX = (W - logoSize)/2;
-      const logoY = 120;
-      ctx.shadowColor = 'rgba(0,0,0,0.08)';
-      ctx.shadowBlur = 30;
-      ctx.shadowOffsetY = 10;
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      if(ctx.roundRect){ ctx.roundRect(logoX, logoY, logoSize, logoSize, 40); } else { ctx.rect(logoX, logoY, logoSize, logoSize); }
-      ctx.fill();
-      ctx.shadowColor = 'transparent';
-      if(logoImg){
-        const box = logoSize - 40;
-        const scale = Math.min(box / logoImg.width, box / logoImg.height);
-        const w = logoImg.width * scale;
-        const h = logoImg.height * scale;
-        const x = logoX + (logoSize - w)/2;
-        const y = logoY + (logoSize - h)/2;
-        ctx.drawImage(logoImg, x, y, w, h);
-      } else {
-        ctx.fillStyle = '#1E4630';
-        ctx.font = 'bold 90px Fraunces, Georgia, serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText((empresaConfig?.logoTexto || 'OU'), W/2, logoY + logoSize/2);
-      }
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'alphabetic';
-      const nomeEmpresa = (empresaConfig?.nome || 'OUXE Distribuidor');
-      ctx.fillStyle = '#1E4630';
-      ctx.font = 'bold 58px Fraunces, Georgia, serif';
-      ctx.fillText(nomeEmpresa, W/2, logoY + logoSize + 80);
-      ctx.fillStyle = '#5C6B5E';
-      ctx.font = '400 26px Plus Jakarta Sans, sans-serif';
-      ctx.fillText((empresaConfig?.sub || 'Produtos naturais e cosméticos'), W/2, logoY + logoSize + 120);
-      const btnW = 820;
-      const btnH = 110;
-      const btnX = (W - btnW)/2;
-      const btnY = logoY + logoSize + 190;
-      const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX+btnW, btnY);
-      btnGrad.addColorStop(0, '#2F7A52');
-      btnGrad.addColorStop(1, '#1E4630');
-      ctx.fillStyle = btnGrad;
-      ctx.beginPath();
-      if(ctx.roundRect){ ctx.roundRect(btnX, btnY, btnW, btnH, 60); } else { ctx.rect(btnX, btnY, btnW, btnH); }
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '800 30px Plus Jakarta Sans, sans-serif';
-      ctx.fillText('👉 TOQUE E FAÇA SEU PEDIDO AQUI', W/2, btnY + 68);
-      ctx.fillStyle = '#2F7A52';
-      ctx.font = '600 22px Plus Jakarta Sans, sans-serif';
-      ctx.fillText('nettosilva017-lgtm.github.io/Ouxe-Distribuidor/', W/2, btnY + btnH + 70);
-      canvas.toBlob((blob)=> resolve(blob), 'image/png');
-    }catch(e){ resolve(null); }
-  });
-}
-
-// FUNÇÃO PRINCIPAL - CORRIGIDA PARA IMAGEM CLICÁVEL
-async function handleShareOuxe(){
-  const url = OUXE_SITE_URL;
-  // Tenta Web Share API com APENAS LINK - isso faz WhatsApp gerar cartão com IMAGEM CLICÁVEL
-  if(navigator.share){
-    try{
-      await navigator.share({
-        title: OUXE_SHARE_TITLE,
-        text: '🛒 Clique na imagem e faça seu pedido aqui',
-        url: url
-      });
-      showToast('✅ Cartão com imagem clicável compartilhado!');
-      return;
-    }catch(err){
-      if(err && err.name === 'AbortError') return;
-      console.log('share link falhou', err);
+// ===== ADMIN PROMOÇÃO - 7 ITENS COM QUANTIDADE, PREÇO PROMO INDEPENDENTE E DATAS =====
+function getPromoConfig(){
+  try{
+    const raw = localStorage.getItem('ouxe-promo-config');
+    if(raw){
+      const cfg = JSON.parse(raw);
+      return { ids: cfg.ids||[], quantities: cfg.quantities||{}, promoPrices: cfg.promoPrices||{}, startDate: cfg.startDate||'', endDate: cfg.endDate||'' };
     }
+    const oldIds = JSON.parse(localStorage.getItem('ouxe-promo-7') || '[]');
+    if(oldIds.length>0) return { ids: oldIds, quantities:{}, promoPrices:{}, startDate:'', endDate:'' };
+  }catch(e){}
+  return { ids:[], quantities:{}, promoPrices:{}, startDate:'', endDate:'' };
+}
+function savePromoConfig(cfg){
+  localStorage.setItem('ouxe-promo-config', JSON.stringify(cfg));
+  localStorage.setItem('ouxe-promo-7', JSON.stringify(cfg.ids));
+}
+
+function renderPromoAdminList(){
+  const listEl = document.getElementById('promoAdminList');
+  const search = (document.getElementById('promoSearch')?.value || '').toLowerCase();
+  if(!listEl) return;
+  const cfg = getPromoConfig();
+  const promoIds = cfg.ids;
+  const startInput = document.getElementById('promoStartDate');
+  const endInput = document.getElementById('promoEndDate');
+  if(startInput && !startInput.value && cfg.startDate) startInput.value = cfg.startDate;
+  if(endInput && !endInput.value && cfg.endDate) endInput.value = cfg.endDate;
+  if(!cfg.startDate && !startInput.value){
+    const hoje = new Date().toISOString().slice(0,10);
+    const fim = new Date(); fim.setDate(new Date().getDate()+7);
+    const fimStr = fim.toISOString().slice(0,10);
+    if(startInput) startInput.value = hoje;
+    if(endInput) endInput.value = fimStr;
+    cfg.startDate = hoje; cfg.endDate = fimStr;
+    savePromoConfig(cfg);
   }
-  // Fallback: abre modal explicativo
-  openShareModal();
+  const filtered = products.map((p,i)=>({p,i})).filter(({p})=> !search || p.name.toLowerCase().includes(search));
+  listEl.innerHTML = filtered.map(({p,i})=>{
+    const checked = promoIds.includes(i) ? 'checked' : '';
+    const disabled = !promoIds.includes(i) && promoIds.length >= 7 ? 'disabled' : '';
+    const qty = cfg.quantities[i] || '';
+    const promoPrice = cfg.promoPrices[i] !== undefined ? cfg.promoPrices[i] : '';
+    const extraHtml = promoIds.includes(i) ? `
+      <div style="display:flex; gap:4px; align-items:center;">
+        <input type="number" min="1" max="9999" placeholder="Qtd" class="promo-qty-input" style="width:55px;" value="${qty}" onchange="setPromoQuantity(${i}, this.value)" title="Quantidade em promoção">
+        <input type="number" min="0.01" step="0.01" placeholder="R$ Promo" class="promo-price-input" style="width:85px;" value="${promoPrice}" onchange="setPromoPrice(${i}, this.value)" title="Preço promo independente">
+      </div>` : '';
+    return `<label style="display:flex; gap:8px; align-items:center; padding:10px; border-bottom:1px solid #eee; cursor:${disabled?'not-allowed':'pointer'}; opacity:${disabled?'0.5':'1'};">
+      <input type="checkbox" ${checked} ${disabled} onchange="togglePromo(${i}, this.checked)" style="width:18px; height:18px;">
+      ${p.image ? `<img src="${escapeAttr(p.image)}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;">` : '<div style="width:40px; height:40px; background:#f5f5f5; border-radius:6px; display:flex; align-items:center; justify-content:center;">📦</div>'}
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(p.name)}</div>
+        <div style="font-size:10px; color:#666;">Normal: R$ ${Number(p.price||0).toFixed(2).replace('.',',')} • ${escapeHtml(p.category)}</div>
+      </div>
+      ${extraHtml}
+    </label>`;
+  }).join('') || '<p style="padding:20px; text-align:center; color:#999;">Nenhum produto</p>';
+  const info = document.getElementById('promoCountInfo');
+  if(info) info.textContent = `${promoIds.length}/7 selecionados`;
 }
 
-function shareViaWhatsApp(){
-  // ENVIA SÓ O LINK - WhatsApp vai transformar em CARTÃO COM IMAGEM CLICÁVEL (usa og:image)
-  const link = OUXE_SITE_URL;
-  window.open(`https://wa.me/?text=${encodeURIComponent(link)}`, '_blank');
-  showToast('✅ Enviando cartão com imagem clicável...');
-  closeShareModal();
+function togglePromo(idx, checked){
+  const cfg = getPromoConfig();
+  let promoIds = cfg.ids;
+  if(checked){
+    if(promoIds.length >= 7){ showToast('❌ Máximo 7 produtos!'); renderPromoAdminList(); return; }
+    if(!promoIds.includes(idx)) promoIds.push(idx);
+    if(!cfg.quantities[idx]) cfg.quantities[idx] = 1;
+    if(cfg.promoPrices[idx] === undefined) cfg.promoPrices[idx] = products[idx]?.price || 0;
+  } else {
+    promoIds = promoIds.filter(id=> id !== idx);
+    delete cfg.quantities[idx];
+    delete cfg.promoPrices[idx];
+  }
+  cfg.ids = promoIds;
+  savePromoConfig(cfg);
+  renderPromoAdminList();
+  if(currentCategory === 'Promoção') renderProducts();
 }
 
-async function shareWithImage(){
-  // Gera imagem simples e compartilha como ARQUIVO (imagem NÃO é clicável, mas o link na legenda é)
-  // Para ter imagem clicável, use a opção "WhatsApp - Imagem Clicável" que manda só link
-  showToast('🖼️ Gerando imagem...');
-  const blob = await gerarBlobImagemSimplesParaShare();
-  if(!blob){
-    shareViaWhatsApp();
+function setPromoQuantity(idx, val){
+  const cfg = getPromoConfig();
+  let q = parseInt(val);
+  if(isNaN(q) || q < 1) q = 1;
+  if(q > 9999) q = 9999;
+  cfg.quantities[idx] = q;
+  savePromoConfig(cfg);
+  if(currentCategory === 'Promoção') renderProducts();
+}
+
+function setPromoPrice(idx, val){
+  const cfg = getPromoConfig();
+  let p = parseFloat(String(val).replace(',','.'));
+  if(isNaN(p) || p < 0) p = 0;
+  cfg.promoPrices[idx] = p;
+  savePromoConfig(cfg);
+  if(currentCategory === 'Promoção') renderProducts();
+}
+
+function setPromoDates(){
+  const cfg = getPromoConfig();
+  const startInput = document.getElementById('promoStartDate');
+  const endInput = document.getElementById('promoEndDate');
+  cfg.startDate = startInput?.value || '';
+  cfg.endDate = endInput?.value || '';
+  savePromoConfig(cfg);
+  if(currentCategory === 'Promoção') renderProducts();
+}
+
+function limparPromo(){
+  if(confirm('Limpar todos os 7 produtos da promoção?')){
+    localStorage.removeItem('ouxe-promo-config');
+    localStorage.removeItem('ouxe-promo-7');
+    const startInput = document.getElementById('promoStartDate');
+    const endInput = document.getElementById('promoEndDate');
+    if(startInput) startInput.value = '';
+    if(endInput) endInput.value = '';
+    renderPromoAdminList();
+    renderProducts();
+    showToast('🗑 Promoção limpa');
+  }
+}
+
+function salvarPromo(){
+  setPromoDates();
+  renderPromoAdminList();
+  if(currentCategory === 'Promoção') renderProducts();
+  showToast('✅ Cartaz de promoção salvo! Veja na categoria Promoção');
+}
+
+// ===== COMPRA DIRETO DO CARTAZ PROMOÇÃO =====
+if(!window.promoBuyQty) window.promoBuyQty = {};
+
+function changePromoBuyQty(realIdx, delta){
+  if(realIdx < 0) return;
+  if(!window.promoBuyQty) window.promoBuyQty = {};
+  const cfg = getPromoConfig();
+  const stock = (cfg.quantities && cfg.quantities[realIdx]) || 9999;
+  let v = (window.promoBuyQty[realIdx] || 0) + delta;
+  v = Math.max(0, Math.min(stock, v));
+  window.promoBuyQty[realIdx] = v;
+  const el = document.getElementById(`promo-qty-${realIdx}`);
+  if(el) el.value = v;
+}
+
+function setPromoBuyQty(realIdx, val){
+  if(realIdx < 0) return;
+  const cfg = getPromoConfig();
+  const stock = (cfg.quantities && cfg.quantities[realIdx]) || 9999;
+  let v = parseInt(val);
+  if(isNaN(v) || v < 0) v = 0;
+  if(v > stock) v = stock;
+  window.promoBuyQty[realIdx] = v;
+  const el = document.getElementById(`promo-qty-${realIdx}`);
+  if(el && el.value != v) el.value = v;
+}
+
+function addPromoToCart(realIdx){
+  if(realIdx < 0){
+    showToast('Produto não encontrado');
     return;
   }
-  const file = new File([blob], 'ouxe-pedido.png', {type:'image/png'});
-  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-    try{
-      await navigator.share({
-        files: [file],
-        title: OUXE_SHARE_TITLE,
-        text: `🛒 Faça seu pedido aqui 👉 ${OUXE_SITE_URL}`
-      });
-      showToast('✅ Imagem enviada! (link na legenda é clicável)');
-      closeShareModal();
-      return;
-    }catch(e){
-      if(e.name === 'AbortError') return;
-    }
+  const cfg = getPromoConfig();
+  const p = products[realIdx];
+  if(!p){ showToast('Produto não encontrado'); return; }
+  const buyQty = window.promoBuyQty[realIdx] || 0;
+  if(buyQty <= 0){ showToast('Selecione a quantidade!'); return; }
+  const stock = (cfg.quantities && cfg.quantities[realIdx]) || 9999;
+  if(buyQty > stock){ showToast(`Só temos ${stock} un. em promoção`); return; }
+
+  const promoPrice = (cfg.promoPrices && cfg.promoPrices[realIdx] !== undefined && cfg.promoPrices[realIdx] !== '' && cfg.promoPrices[realIdx] !== null) ? Number(cfg.promoPrices[realIdx]) : Number(p.price||0);
+
+  const existing = cart.find(c => c.name === p.name && Number(c.price) === promoPrice);
+  if(existing){
+    existing.qty += buyQty;
+  } else {
+    cart.push({ name: p.name + (promoPrice !== Number(p.price||0) ? ' (PROMO)' : ''), price: promoPrice, image: p.image||'', qty: buyQty, isPromo: true, promoRealIdx: realIdx });
   }
-  // Fallback download + abre WhatsApp com link clicável
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'ouxe-pedido.png';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=> URL.revokeObjectURL(url), 2000);
-  setTimeout(()=> shareViaWhatsApp(), 800);
+  saveCart(); updateCartBadge();
+  try{ triggerMoneyEffect(); }catch(e){}
+  try{ playCashSound(); }catch(e){}
+  try{ speakObrigadoMilionario(); }catch(e){}
+  try{ triggerThumbsUp(); }catch(e){}
+  showToast(`✓ ${buyQty}x ${p.name.substring(0,20)} na promo`);
+  window.promoBuyQty[realIdx] = 0;
+  const el = document.getElementById(`promo-qty-${realIdx}`);
+  if(el) el.value = 0;
 }
 
-function shareViaFacebook(){
-  const url = encodeURIComponent(OUXE_SITE_URL);
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-  showToast('📤 Compartilhando como cartão clicável...');
-  closeShareModal();
-}
-
-function copyShareLink(){
-  const text = OUXE_SITE_URL;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(()=>{
-      showToast('🔗 Link copiado! Cole no WhatsApp para virar imagem clicável');
-      closeShareModal();
-    }).catch(()=> fallbackCopy(text));
-  }else{
-    fallbackCopy(text);
-  }
-}
-
-function fallbackCopy(text){
-  const ta = document.createElement('textarea');
-  ta.value = text; document.body.appendChild(ta); ta.select();
-  try{ document.execCommand('copy'); showToast('🔗 Link copiado!'); closeShareModal(); }catch(e){ showToast('Copie: ' + text); }
-  ta.remove();
-}
-
-function openShareModal(){
-  document.getElementById('shareModal')?.classList.add('active');
-}
-function closeShareModal(){
-  document.getElementById('shareModal')?.classList.remove('active');
-}
-
-
-// ===== GERAR TABELA DE PREÇOS EM IMAGEM =====
-let tabelaUltimoBlob = null;
-let tabelaUltimoNome = '';
-
-function atualizarInfoTabela(){
-  const el = document.getElementById('tabelaEmpresaInfo');
-  if(!el) return;
-  const nome = (empresaConfig?.nome || 'OUXE Distribuidor');
-  const sub = (empresaConfig?.sub || 'Produtos naturais e cosméticos');
-  const hasLogo = empresaConfig?.logo ? 'com logo' : 'sem logo (usando iniciais)';
-  el.textContent = `${nome} - ${sub} (${hasLogo})`;
-}
-
-function loadImageFromSrc(src){
-  return new Promise((resolve)=>{
-    if(!src){ resolve(null); return; }
-    const img = new Image();
-    img.onload = ()=> resolve(img);
-    img.onerror = ()=> resolve(null);
-    img.src = src;
-  });
-}
-
-async function gerarTabelaPrecosImagem(){
-  try{
-    const catSel = document.getElementById('tabelaCategoria')?.value || 'Todos';
-    const estilo = document.getElementById('tabelaEstilo')?.value || 'completo';
-    let lista = catSel === 'Todos' ? [...products] : products.filter(p=>p.category===catSel);
-    lista = lista.slice().sort((a,b)=> a.name.localeCompare(b.name,'pt-BR'));
-    if(lista.length===0){ showToast('❌ Nenhum produto nessa categoria'); return; }
-
-    showToast('🖼️ Gerando tabela...');
-
-    const W = 1080;
-    const headerH = 210;
-    const rowH = 52;
-    const tableHeaderH = 56;
-    const footerH = 90;
-    const paddingX = 40;
-    const H = headerH + tableHeaderH + (lista.length * rowH) + footerH + 40;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
-
-    // Fundo branco
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,W,H);
-
-    // Header gradiente
-    const grad = ctx.createLinearGradient(0,0,W,0);
-    grad.addColorStop(0, '#2F7A52');
-    grad.addColorStop(1, '#1E4630');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0,0,W,headerH);
-
-    // Logo - tenta carregar
-    let logoImg = null;
-    if(empresaConfig?.logo){
-      logoImg = await loadImageFromSrc(empresaConfig.logo);
-    }
-    // Se não tem logo custom, tenta logo.jpg do projeto
-    if(!logoImg){
-      try{
-        // tenta carregar ./logo.jpg como fallback (pode falhar por CORS se for externo, mas tenta)
-        logoImg = await loadImageFromSrc('./logo.jpg');
-      }catch(e){}
-    }
-
-    // Caixa branca logo
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    const logoBoxX = paddingX;
-    const logoBoxY = 28;
-    const logoBoxSize = 110;
-    // @ts-ignore roundRect
-    if(ctx.roundRect){ ctx.roundRect(logoBoxX, logoBoxY, logoBoxSize, logoBoxSize, 22); ctx.fill(); }
-    else { ctx.fillRect(logoBoxX, logoBoxY, logoBoxSize, logoBoxSize); }
-
-    if(logoImg){
-      // desenha logo centralizado dentro da caixa
-      const box = logoBoxSize - 16;
-      const scale = Math.min(box / logoImg.width, box / logoImg.height);
-      const w = logoImg.width * scale;
-      const h = logoImg.height * scale;
-      const x = logoBoxX + (logoBoxSize - w)/2;
-      const y = logoBoxY + (logoBoxSize - h)/2;
-      ctx.drawImage(logoImg, x, y, w, h);
-    } else {
-      ctx.fillStyle = '#1E4630';
-      ctx.font = 'bold 38px Fraunces, Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText((empresaConfig?.logoTexto || 'OU'), logoBoxX + logoBoxSize/2, logoBoxY + logoBoxSize/2);
-    }
-
-    // Nome empresa
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-    ctx.font = 'bold 44px Fraunces, Georgia, serif';
-    const nomeEmpresa = (empresaConfig?.nome || 'OUXE Distribuidor');
-    ctx.fillText(nomeEmpresa, 170, 80);
-
-    ctx.font = '400 22px Plus Jakarta Sans, Segoe UI, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,.9)';
-    const subEmpresa = (empresaConfig?.sub || 'Produtos naturais e cosméticos');
-    ctx.fillText(subEmpresa, 170, 115);
-
-    // Data
-    const agora = new Date();
-    const dataStr = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    ctx.font = '600 18px Plus Jakarta Sans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,.85)';
-    ctx.textAlign = 'right';
-    ctx.fillText('Tabela de Preços - ' + dataStr, W - paddingX, 55);
-    ctx.font = '500 16px Plus Jakarta Sans, sans-serif';
-    ctx.fillText(catSel === 'Todos' ? `${lista.length} produtos` : `${lista.length} produtos • ${catSel}`, W - paddingX, 85);
-    ctx.textAlign = 'left';
-
-    // Cabeçalho tabela
-    let y = headerH;
-    ctx.fillStyle = '#F0F3E9';
-    ctx.fillRect(0, y, W, tableHeaderH);
-    ctx.fillStyle = '#1E4630';
-    ctx.font = 'bold 19px Plus Jakarta Sans, sans-serif';
-    ctx.fillText('PRODUTO', paddingX, y + 34);
-    if(estilo === 'categoria'){
-      ctx.fillText('CATEGORIA', W - 380, y + 34);
-    }
-    ctx.textAlign = 'right';
-    ctx.fillText('PREÇO', W - paddingX, y + 34);
-    ctx.textAlign = 'left';
-
-    // Linhas
-    y += tableHeaderH;
-    lista.forEach((p, i)=>{
-      const isEven = i % 2 === 0;
-      if(isEven){
-        ctx.fillStyle = '#FAFAF7';
-        ctx.fillRect(0, y, W, rowH);
-      }
-      // linha divisória sutil
-      ctx.strokeStyle = '#EDEEE8';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(paddingX, y + rowH);
-      ctx.lineTo(W - paddingX, y + rowH);
-      ctx.stroke();
-
-      ctx.fillStyle = '#1B2420';
-      ctx.font = '600 18px Plus Jakarta Sans, sans-serif';
-      let nome = p.name || '';
-      // limita tamanho para não estourar
-      const maxChars = estilo === 'categoria' ? 42 : 62;
-      if(nome.length > maxChars) nome = nome.substring(0, maxChars-1) + '…';
-      ctx.fillText(nome, paddingX, y + 32);
-
-      if(estilo === 'categoria'){
-        ctx.fillStyle = '#5C6B5E';
-        ctx.font = '500 15px Plus Jakarta Sans, sans-serif';
-        ctx.fillText(p.category || 'Outros', W - 380, y + 32);
-      }
-
-      ctx.fillStyle = '#1E4630';
-      ctx.font = 'bold 20px Plus Jakarta Sans, sans-serif';
-      ctx.textAlign = 'right';
-      const preco = 'R$ ' + Number(p.price||0).toFixed(2).replace('.', ',');
-      ctx.fillText(preco, W - paddingX, y + 32);
-      ctx.textAlign = 'left';
-
-      y += rowH;
-    });
-
-    // Footer
-    ctx.fillStyle = '#1E4630';
-    ctx.fillRect(0, H - footerH, W, footerH);
-    ctx.fillStyle = 'rgba(255,255,255,.9)';
-    ctx.font = '600 18px Plus Jakarta Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(nomeEmpresa + ' • Faça seu pedido aqui', W/2, H - 52);
-    ctx.font = '400 15px Plus Jakarta Sans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,.7)';
-    ctx.fillText('https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/  •  ' + subEmpresa, W/2, H - 26);
-
-    // Gera blob e preview
-    canvas.toBlob((blob)=>{
-      if(!blob){ showToast('❌ Erro ao gerar imagem'); return; }
-      tabelaUltimoBlob = blob;
-      const dataUrl = canvas.toDataURL('image/png');
-      const previewImg = document.getElementById('tabelaPreviewImg');
-      const area = document.getElementById('tabelaPreviewArea');
-      if(previewImg){ previewImg.src = dataUrl; }
-      if(area){ area.style.display = 'block'; }
-      const safeCat = catSel.replace(/\s+/g,'-').toLowerCase();
-      tabelaUltimoNome = `tabela-precos-${safeCat}-${new Date().toISOString().slice(0,10)}.png`;
-      showToast(`✅ Tabela gerada! ${lista.length} produtos`);
-      // scroll até preview
-      setTimeout(()=>{ document.getElementById('tabelaPreviewArea')?.scrollIntoView({behavior:'smooth', block:'center'}); }, 300);
-    }, 'image/png');
-
-  }catch(e){
-    console.error(e);
-    showToast('❌ Erro ao gerar tabela');
-  }
-}
-
-function baixarTabelaImagem(){
-  if(!tabelaUltimoBlob){ showToast('Gere a tabela primeiro!'); return; }
-  const url = URL.createObjectURL(tabelaUltimoBlob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = tabelaUltimoNome || 'tabela-precos-ouxe.png';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=> URL.revokeObjectURL(url), 2000);
-  showToast('⬇️ Baixando imagem...');
-}
-
-async function compartilharTabelaImagem(){
-  if(!tabelaUltimoBlob){ showToast('Gere a tabela primeiro!'); return; }
-  const file = new File([tabelaUltimoBlob], tabelaUltimoNome || 'tabela-precos-ouxe.png', {type:'image/png'});
-  const nomeEmpresa = (empresaConfig?.nome || 'OUXE Distribuidor');
-  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-    try{
-      await navigator.share({files:[file], title: `Tabela de Preços - ${nomeEmpresa}`, text: `📋 Tabela de Preços - ${nomeEmpresa}\nFaça seu pedido aqui: https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/`});
-      showToast('✅ Tabela compartilhada!');
-      return;
-    }catch(err){
-      if(err && err.name === 'AbortError') return;
-    }
-  }
-  // fallback download
-  baixarTabelaImagem();
-}
-
-
-// ===== IMAGEM SIMPLES SÓ LOGO + CLIQUE E FAÇA SEU PEDIDO =====
-let ctaUltimoBlob = null;
-
-async function gerarImagemSimplesCTA(){
-  try{
-    showToast('🖼️ Gerando imagem...');
-    const W = 1080;
-    const H = 1350; // formato retrato para status/whatsapp
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
-
-    // Fundo branco com detalhe verde claro
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,W,H);
-    ctx.fillStyle = '#F0F3E9';
-    ctx.fillRect(0,0,W,500);
-
-    // Topo gradiente fino
-    const grad = ctx.createLinearGradient(0,0,W,0);
-    grad.addColorStop(0, '#2F7A52');
-    grad.addColorStop(1, '#1E4630');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0,0,W,14);
-
-    // Logo
-    let logoImg = null;
-    if(empresaConfig?.logo){
-      logoImg = await loadImageFromSrc(empresaConfig.logo);
-    }
-    if(!logoImg){
-      try{ logoImg = await loadImageFromSrc('./logo.jpg'); }catch(e){}
-    }
-
-    // Caixa logo grande centralizada
-    const logoSize = 420;
-    const logoX = (W - logoSize)/2;
-    const logoY = 120;
-    
-    // sombra suave
-    ctx.shadowColor = 'rgba(0,0,0,0.08)';
-    ctx.shadowBlur = 30;
-    ctx.shadowOffsetY = 10;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    if(ctx.roundRect){ ctx.roundRect(logoX, logoY, logoSize, logoSize, 40); } else { ctx.rect(logoX, logoY, logoSize, logoSize); }
-    ctx.fill();
-    ctx.shadowColor = 'transparent';
-
-    if(logoImg){
-      const box = logoSize - 40;
-      const scale = Math.min(box / logoImg.width, box / logoImg.height);
-      const w = logoImg.width * scale;
-      const h = logoImg.height * scale;
-      const x = logoX + (logoSize - w)/2;
-      const y = logoY + (logoSize - h)/2;
-      ctx.drawImage(logoImg, x, y, w, h);
-    } else {
-      ctx.fillStyle = '#1E4630';
-      ctx.font = 'bold 90px Fraunces, Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText((empresaConfig?.logoTexto || 'OU'), W/2, logoY + logoSize/2);
-    }
-
-    // Nome empresa
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'alphabetic';
-    const nomeEmpresa = (empresaConfig?.nome || 'OUXE Distribuidor');
-    ctx.fillStyle = '#1E4630';
-    ctx.font = 'bold 58px Fraunces, Georgia, serif';
-    ctx.fillText(nomeEmpresa, W/2, logoY + logoSize + 80);
-
-    ctx.fillStyle = '#5C6B5E';
-    ctx.font = '400 26px Plus Jakarta Sans, sans-serif';
-    const subEmpresa = (empresaConfig?.sub || 'Produtos naturais e cosméticos');
-    ctx.fillText(subEmpresa, W/2, logoY + logoSize + 120);
-
-    // Botão grande CLIQUE E FAÇA SEU PEDIDO
-    const btnW = 820;
-    const btnH = 110;
-    const btnX = (W - btnW)/2;
-    const btnY = logoY + logoSize + 190;
-    
-    const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX+btnW, btnY);
-    btnGrad.addColorStop(0, '#2F7A52');
-    btnGrad.addColorStop(1, '#1E4630');
-    ctx.fillStyle = btnGrad;
-    ctx.beginPath();
-    if(ctx.roundRect){ ctx.roundRect(btnX, btnY, btnW, btnH, 60); } else { ctx.rect(btnX, btnY, btnW, btnH); }
-    ctx.fill();
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '800 32px Plus Jakarta Sans, sans-serif';
-    ctx.fillText('👉 CLIQUE E FAÇA SEU PEDIDO AQUI', W/2, btnY + 68);
-
-    // Link
-    ctx.fillStyle = '#2F7A52';
-    ctx.font = '600 22px Plus Jakarta Sans, sans-serif';
-    ctx.fillText('https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/', W/2, btnY + btnH + 70);
-
-    // Ícone de toque
-    ctx.font = '400 20px Plus Jakarta Sans, sans-serif';
-    ctx.fillStyle = '#888';
-    ctx.fillText('Toque na imagem para acessar a loja', W/2, H - 60);
-
-    // Gera blob
-    canvas.toBlob((blob)=>{
-      if(!blob){ showToast('❌ Erro ao gerar'); return; }
-      ctaUltimoBlob = blob;
-      tabelaUltimoBlob = blob; // reaproveita os botões de baixar/compartilhar existentes
-      tabelaUltimoNome = `ouxe-faca-seu-pedido-${new Date().toISOString().slice(0,10)}.png`;
-      const dataUrl = canvas.toDataURL('image/png');
-      const previewImg = document.getElementById('tabelaPreviewImg');
-      const area = document.getElementById('tabelaPreviewArea');
-      if(previewImg) previewImg.src = dataUrl;
-      if(area) area.style.display = 'block';
-      showToast('✅ Imagem simples gerada!');
-      setTimeout(()=>{ document.getElementById('tabelaPreviewArea')?.scrollIntoView({behavior:'smooth', block:'center'}); }, 300);
-    }, 'image/png');
-  }catch(e){
-    console.error(e);
-    showToast('❌ Erro ao gerar imagem');
-  }
-}
-
-async function compartilharImagemSimplesCTA(){
-  if(!ctaUltimoBlob){
-    await gerarImagemSimplesCTA();
-    setTimeout(()=> compartilharTabelaImagem(), 800);
-    return;
-  }
-  const file = new File([ctaUltimoBlob], 'ouxe-faca-seu-pedido.png', {type:'image/png'});
-  const nomeEmpresa = (empresaConfig?.nome || 'OUXE Distribuidor');
-  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-    try{
-      await navigator.share({files:[file], title: `${nomeEmpresa} - Faça seu pedido`, text: `🛒 Clique e faça seu pedido aqui - ${nomeEmpresa}\n👉 https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/`});
-      showToast('✅ Imagem compartilhada!');
-      return;
-    }catch(err){
-      if(err && err.name === 'AbortError') return;
-    }
-  }
-  baixarTabelaImagem();
-}
-
-// Atualiza info quando abre aba tabela
-const _oldSwitchTab = window.switchTab;
+// Atualiza switchTab para incluir promo
+const _oldSwitchTabPromo = window.switchTab;
 window.switchTab = function(tab, el){
-  if(typeof _oldSwitchTab === 'function') _oldSwitchTab(tab, el);
+  if(typeof _oldSwitchTabPromo === 'function') _oldSwitchTabPromo(tab, el);
   else {
     document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
@@ -2164,6 +2204,12 @@ window.switchTab = function(tab, el){
     if (tab === 'list' && typeof renderAdminList === 'function') renderAdminList();
     if (tab === 'empresa' && typeof loadEmpresaForm === 'function') loadEmpresaForm();
     if (tab === 'backup' && typeof renderBackupInfo === 'function') renderBackupInfo();
+  }
+  if(tab === 'cupons'){
+    setTimeout(()=>{ try{ renderCouponAdminList(); }catch(e){} }, 100);
+  }
+  if(tab === 'promocao'){
+    setTimeout(()=>{ try{ renderPromoAdminList(); }catch(e){} }, 100);
   }
   if(tab === 'tabela'){
     setTimeout(()=>{ try{ atualizarInfoTabela(); }catch(e){} }, 100);
@@ -2346,10 +2392,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// ===== OUXE - COMPARTILHAMENTO COM IMAGEM + LINK =====
 
+// ===== COMPARTILHAMENTO SIMPLES - MILIONARIO =====
+const OUXE_SITE_URL = 'https://nettosilva017-lgtm.github.io/Ouxe-Distribuidor/';
+const OUXE_SHARE_TITLE = 'OUXE Distribuidor';
 
-// Fecha modal ao clicar fora
+function openShareModal(){ document.getElementById('shareModal')?.classList.add('active'); }
+function closeShareModal(){ document.getElementById('shareModal')?.classList.remove('active'); }
+
+function handleShareMilionario(){
+  const texto = `🖼️ OUXE Distribuidor
+Faça seu pedido, Milionario(a), rico(a), Aqui 👉`;
+  if(navigator.share){
+    navigator.share({title: OUXE_SHARE_TITLE, text: texto, url: OUXE_SITE_URL}).then(()=> showToast('✅ Link compartilhado!')).catch((err)=>{ if(err && err.name !== 'AbortError') openShareModal(); });
+  } else {
+    openShareModal();
+  }
+}
+
+function shareViaWhatsApp(){
+  const msg = `🖼️ OUXE Distribuidor
+Faça seu pedido, Milionario(a), rico(a), Aqui 👉 ${OUXE_SITE_URL}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  showToast('📤 Abrindo WhatsApp...');
+  closeShareModal();
+}
+
+function shareViaFacebook(){
+  const url = encodeURIComponent(OUXE_SITE_URL);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+  closeShareModal();
+}
+
+function copyShareLink(){
+  const text = `Faça seu pedido, Milionario(a), rico(a), Aqui 👉 ${OUXE_SITE_URL}`;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{ showToast('🔗 Link copiado!'); closeShareModal(); }).catch(()=> fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); showToast('🔗 Link copiado!'); closeShareModal(); }catch(e){ showToast('Copie: ' + text); }
+  ta.remove();
+}
+
+function shareWithImage(){ shareViaWhatsApp(); }
+
 document.addEventListener('DOMContentLoaded', ()=>{
   const sm = document.getElementById('shareModal');
   if(sm){ sm.addEventListener('click', (e)=>{ if(e.target===sm) closeShareModal(); }); }
