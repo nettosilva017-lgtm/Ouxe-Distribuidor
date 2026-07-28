@@ -247,16 +247,25 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
   *,*::before,*::after{animation:none !important;transition:none !important}
 }
 
-.catalog-toolbar{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px}
+.catalog-toolbar{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.catalog-toolbar .form-group{margin:0;flex:1;min-width:130px}
 .catalog-preview{background:#fff;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;max-height:60vh;overflow-y:auto}
 .catalog-table{width:100%;border-collapse:collapse;font-size:13px}
-.catalog-table th{background:var(--forest);color:#fff;padding:10px 8px;text-align:left;font-weight:800;position:sticky;top:0}
+.catalog-table th{background:var(--forest);color:#fff;padding:10px 8px;text-align:left;font-weight:800;position:sticky;top:0;z-index:1}
 .catalog-table td{padding:8px;border-bottom:1px solid #eee;vertical-align:middle}
 .catalog-table tr:nth-child(even){background:#FAFBF6}
 .catalog-table img{width:46px;height:46px;object-fit:contain;border-radius:8px;border:1px solid #eee;background:#fff;padding:2px}
-.catalog-header-print{background:linear-gradient(135deg,#1E4630,#2F7A52);color:#fff;padding:16px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:12px}
+.catalog-card{border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center;background:#fff}
+.catalog-card img{width:100%;height:110px;object-fit:contain;background:#fafafa;border-radius:8px;margin-bottom:6px;padding:4px;border:1px solid #f0f0f0}
+.catalog-card .c-name{font-size:11px;font-weight:700;line-height:1.2;min-height:32px;text-transform:uppercase;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.catalog-card .c-price{color:var(--gold);font-weight:900;font-family:'Fraunces',serif;font-size:14px;margin-top:4px}
+.catalog-card .c-cat{font-size:10px;color:var(--ink-soft);background:var(--paper);padding:2px 6px;border-radius:999px;display:inline-block;margin-top:4px}
 .catalog-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 .catalog-actions button{flex:1;min-width:120px}
+@media print{body *{visibility:hidden}#catalogPrintArea,#catalogPrintArea *{visibility:visible}#catalogPrintArea{position:absolute;left:0;top:0;width:100%;padding:20px}.no-print{display:none!important}}
+.catalog-header-print{background:linear-gradient(135deg,#1E4630,#2F7A52);color:#fff;padding:16px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+
 </style>
 </head>
 <body>
@@ -285,7 +294,7 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
 </header>
 
 <div class="search-bar">
-  <input type="search" id="searchInput" placeholder="🔎 Pesquisar produto..." autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Pesquisar produto">
+  <input type="search" id="searchInput" autocomplete="off" autocorrect="off" spellcheck="false" value="" placeholder="🔎 Pesquisar produto..." autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Pesquisar produto">
   <button class="search-clear" id="searchClear" style="display:none" onclick="clearSearch()" aria-label="Limpar busca">×</button>
 </div>
 
@@ -346,8 +355,9 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
     </div>
 
     <div class="admin-panel active" id="panel-dash">
-      <div id="unsavedBanner" style="display:none;background:#FFEB3B;border:1px solid #FBC02D;padding:10px;border-radius:10px;margin-bottom:10px">
+            <div id="unsavedBanner" style="display:none;background:#FFEB3B;border:1px solid #FBC02D;padding:10px;border-radius:10px;margin-bottom:10px">
         <div style="font-weight:800;color:#000;font-size:13px">⚠️ Alterações não salvas no GitHub!</div>
+        <div style="font-size:11px;color:#333;margin:4px 0">Para valer para todos, exporte produtos.json e suba no GitHub.</div>
         <button class="btn-primary" style="margin-top:6px;background:#000;color:#FFEB3B" onclick="exportProdutosJson()">📤 Exportar produtos.json AGORA</button>
       </div>
 
@@ -360,7 +370,7 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
         <button class="btn-primary" style="width:auto;padding:10px 14px" onclick="exportProdutosJson()">📤 Exportar produtos.json</button>
         <button class="btn-primary" style="width:auto;padding:10px 14px;background:#fff;color:var(--forest);border:1.5px solid var(--line)" onclick="switchTab('add', document.querySelectorAll('.admin-tab')[1])">➕ Novo produto</button>
       </div>
-      <p style="font-size:11px;color:#777;margin-top:10px">Dica: Agora seus produtos são salvos automaticamente no navegador (localStorage) e continuam após recarregar. Exporte o produtos.json só quando quiser publicar no GitHub para todos os clientes.</p>
+      <p style="font-size:11px;color:#555;margin-top:10px;background:#FFF9C4;padding:8px;border-radius:8px;border:1px solid #FBC02D">⚠️ <b>Modo arquivo único:</b> Alterações aparecem na hora, mas só ficam permanentes quando você exporta <b>produtos.json</b> e sobe no GitHub.</p>
     </div>
 
     <div class="admin-panel" id="panel-add">
@@ -423,23 +433,29 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
 
     <div class="admin-panel" id="panel-catalogo">
       <div style="background:#E8F5E9;border:1px solid #C8E6C9;border-radius:10px;padding:10px;margin-bottom:10px">
-        <div style="font-weight:800;color:var(--forest);font-size:14px">📖 Gerador de Tabela Elegante (igual seu print)</div>
-        <div style="font-size:12px;color:#555;margin-top:4px">Clique no botão verde para enviar essa tabela bonita exatamente desse jeito no WhatsApp como imagem.</div>
+        <div style="font-weight:800;color:var(--forest);font-size:14px">📖 Gerador de Tabela de Preços e Catálogo</div>
+        <div style="font-size:12px;color:#555;margin-top:4px">Crie tabela com fotos para imprimir, PDF ou WhatsApp.</div>
       </div>
       <div class="catalog-toolbar">
-        <div class="form-group"><label>Tipo</label><select id="catalogType" onchange="renderCatalogPreview()"><option value="tabela">📋 Tabela com fotos (igual print)</option><option value="grade">🖼️ Grade fotos</option></select></div>
+        <div class="form-group"><label>Tipo</label><select id="catalogType" onchange="renderCatalogPreview()"><option value="tabela">📋 Tabela com fotos</option><option value="tabela_simples">📄 Tabela simples</option><option value="grade">🖼️ Grade fotos grandes</option><option value="lista_precos">💲 Lista curta</option></select></div>
         <div class="form-group"><label>Categoria</label><select id="catalogCategory" onchange="renderCatalogPreview()"><option value="Todas">Todas</option><option value="Cosméticos">Cosméticos</option><option value="Produtos Naturais">Produtos Naturais</option><option value="Alimentos">Alimentos</option><option value="Limpeza">Limpeza</option><option value="Bebidas">Bebidas</option><option value="Acessórios">Acessórios</option><option value="Outros">Outros</option></select></div>
+        <div class="form-group"><label>Ordenar</label><select id="catalogSort" onchange="renderCatalogPreview()"><option value="nome">Nome A-Z</option><option value="preco_menor">Menor preço</option><option value="preco_maior">Maior preço</option><option value="categoria">Categoria</option></select></div>
         <div class="form-group"><label><input type="checkbox" id="catalogOnlyAvailable" checked onchange="renderCatalogPreview()"> Só disponíveis</label></div>
       </div>
       <div class="catalog-actions">
-        <button class="btn-primary" onclick="renderCatalogPreview()">🔄 Atualizar prévia</button>
-        <button class="btn-primary" style="background:var(--gold);border:none" onclick="generateCatalogImage()">🖼️ Enviar essa tabela como imagem no WhatsApp</button>
-        <button class="btn-primary" style="background:#25D366;color:#fff;border:none" onclick="shareCatalogAsImage()">📱 Enviar tabela elegante no WhatsApp</button>
+        <button class="btn-primary" onclick="renderCatalogPreview()">🔄 Atualizar</button>
+        <button class="btn-primary" style="background:#fff;color:var(--forest);border:1.5px solid var(--line)" onclick="printCatalog()">🖨️ Imprimir / PDF</button>
+        <button class="btn-primary" style="background:var(--gold);border:none" onclick="generateCatalogImage()">🖼️ Imagem Longa</button>
+        <button class="btn-primary" style="background:var(--whats)" onclick="shareCatalog()">📱 WhatsApp</button>
       </div>
-      <span style="font-size:11px;color:#888" id="catalogCount"></span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="btn-primary" style="width:auto;padding:8px 12px;font-size:12px;background:#fff;color:var(--forest);border:1.5px solid var(--line)" onclick="exportCatalogCSV()">📊 CSV</button>
+        <button class="btn-primary" style="width:auto;padding:8px 12px;font-size:12px;background:#fff;color:var(--forest);border:1.5px solid var(--line)" onclick="copyCatalogText()">📋 Copiar texto</button>
+        <span style="font-size:11px;color:#888;align-self:center" id="catalogCount"></span>
+      </div>
       <div id="catalogPrintArea">
         <div class="catalog-header-print" id="catalogHeaderPrint">
-          <div style="width:56px;height:56px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--forest);font-weight:800;font-size:20px" id="catalogLogoPrint">OU</div>
+          <div style="width:56px;height:56px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--forest);font-weight:800;font-family:Fraunces,serif;font-size:20px;flex-shrink:0" id="catalogLogoPrint">OU</div>
           <div style="flex:1">
             <div style="font-size:18px;font-weight:800" id="catalogTitlePrint">OUXE Distribuidor - Tabela de Preços</div>
             <div style="font-size:12px;opacity:.9" id="catalogSubPrint">Produtos naturais e cosméticos • <span id="catalogDatePrint"></span></div>
@@ -609,12 +625,14 @@ async function loadProducts(){
       const data=await res.json();
       if(Array.isArray(data)&&data.length>0){
         products=cloneProducts(data);
+        console.log('✅ Produtos de produtos.json',products.length);
         return;
       }
     }
-  }catch(e){}
+  }catch(e){console.warn('produtos.json falhou',e)}
   products=cloneProducts(DEFAULT_PRODUCTS);
 }
+
 function saveProducts(){
   try{sessionStorage.setItem('ouxe-products-temp', JSON.stringify(products));}catch(e){}
   try{renderBackupInfo();}catch(e){}
@@ -1184,21 +1202,23 @@ function updateSharePreviewImage(){
 }
 async function shareLogoToWhatsApp(){
   const img=document.getElementById('sharePreviewImg');
-  const num=(empresaConfig?.whats||'5575981236160').replace(/\D/g,'');
-  const waLink='wa.me/'+num;
+  const waNum=(empresaConfig?.whats||'5575981236160').replace(/\D/g,'');
+  const waLink='wa.me/'+waNum;
   const texto='OUXE Distribuidor\nFaça seu pedido, Milionario(a), rico(a), Aqui 👇\n'+waLink;
   const msg='OUXE Distribuidor\nFaça seu pedido, Milionario(a), rico(a), Aqui 👇\n'+waLink;
   try{
     if(img&&img.src){
       const resp=await fetch(img.src);const blob=await resp.blob();
-      const file=new File([blob],'ouxe-logo.jpg',{type:blob.type||'image/jpeg'});
+      const ext=blob.type&&blob.type.includes('png')?'png':'jpg';
+      const file=new File([blob],'ouxe-logo.'+ext,{type:blob.type||'image/jpeg'});
       if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
         await navigator.share({files:[file],title:OUXE_SHARE_TITLE,text:texto});
         showToast('✅ Imagem enviada!');closeShareModal();return;
       }
     }
-  }catch(err){if(err&&err.name==='AbortError')return;}
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');closeShareModal();
+  }catch(err){if(err&&err.name==='AbortError')return;console.warn(err)}
+  try{if(img&&img.src){const a=document.createElement('a');a.href=img.src;a.download='ouxe-logo.jpg';document.body.appendChild(a);a.click();a.remove();}}catch(e){}
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');showToast('📤 Imagem baixada! Anexe no WhatsApp');closeShareModal();
 }
 function handleShareMilionario(){openShareModal()}
 function shareViaWhatsApp(){const msg=`OUXE Distribuidor\nFaça seu pedido, Milionario(a), rico(a), Aqui 👇 ${OUXE_SITE_URL}`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');showToast('📤 Abrindo WhatsApp...');closeShareModal()}
@@ -1242,9 +1262,8 @@ function renderBackupInfo(){
   const el=document.getElementById('backupStorageInfo');
   if(!el)return;
   try{
-    let bytes=0;for(const k in localStorage){if(Object.prototype.hasOwnProperty.call(localStorage,k)) bytes+=(localStorage[k].length+k.length)*2}
-    const kb=(bytes/1024).toFixed(0);
-    el.innerHTML=`${products.length} produtos salvos localmente • Backup automático ativo<br><span style="font-size:11px;color:#666">Uso: ${kb} KB • Fonte: ${LS_PRODUCTS} • v${APP_VERSION}</span>`;
+    const hasUnsaved=window._hasUnsavedChanges?'<span style="background:#FFEB3B;color:#000;padding:2px 6px;border-radius:4px;font-weight:800;margin-left:6px">⚠️ NÃO SALVO</span>':'<span style="background:#C8E6C9;color:#1B5E20;padding:2px 6px;border-radius:4px;font-weight:700;margin-left:6px">✅ Sincronizado</span>';
+    el.innerHTML=`${products.length} produtos de <b>produtos.json</b> ${hasUnsaved}<br><span style="font-size:11px;color:#666">Exporte produtos.json e suba no GitHub • v${APP_VERSION}</span>`;
   }catch(e){el.textContent=`${products.length} produtos • v${APP_VERSION}`}
 }
 function exportBackup(){
@@ -1503,16 +1522,22 @@ function salvarPromo(){showToast('✅ Promoção salva! Veja na aba Promoção')
 
 // Init
 
+// CATÁLOGO
 function getCatalogProducts(){
   const cat=document.getElementById('catalogCategory')?.value||'Todas';
   const onlyAvail=document.getElementById('catalogOnlyAvailable')?.checked;
+  const sort=document.getElementById('catalogSort')?.value||'nome';
   let list=products.slice();
   if(cat!=='Todas') list=list.filter(p=>p.category===cat);
   if(onlyAvail) list=list.filter(p=>p.disponivel);
-  list.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+  if(sort==='nome') list.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+  else if(sort==='preco_menor') list.sort((a,b)=>a.price-b.price);
+  else if(sort==='preco_maior') list.sort((a,b)=>b.price-a.price);
+  else if(sort==='categoria') list.sort((a,b)=>(a.category+b.name).localeCompare(b.category+a.name,'pt-BR'));
   return list;
 }
 function renderCatalogPreview(){
+  const type=document.getElementById('catalogType')?.value||'tabela';
   const list=getCatalogProducts();
   const area=document.getElementById('catalogPreviewArea');
   const countEl=document.getElementById('catalogCount');
@@ -1521,50 +1546,64 @@ function renderCatalogPreview(){
   const infoEl=document.getElementById('catalogInfoPrint');
   const logoEl=document.getElementById('catalogLogoPrint');
   if(!area) return;
-  if(dateEl) dateEl.textContent=new Date().toLocaleDateString('pt-BR');
+  if(dateEl) dateEl.textContent=new Date().toLocaleDateString('pt-BR')+' '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   if(titleEl) titleEl.textContent=(empresaConfig?.nome||'OUXE Distribuidor')+' - Tabela de Preços';
-  if(infoEl) infoEl.innerHTML=list.length+' produtos<br>'+(document.getElementById('catalogCategory')?.value||'Todas');
+  const subEl=document.getElementById('catalogSubPrint');
+  if(subEl) subEl.innerHTML=`${escapeHtml(empresaConfig?.sub||'Produtos naturais e cosméticos')} • Gerado em <span>${new Date().toLocaleDateString('pt-BR')}</span>`;
+  if(infoEl) infoEl.innerHTML=`${list.length} produtos<br>${document.getElementById('catalogCategory')?.value||'Todas'}`;
   if(logoEl){
-    if(empresaConfig?.logo) logoEl.innerHTML='<img src="'+empresaConfig.logo+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px">';
+    if(empresaConfig?.logo) logoEl.innerHTML=`<img src="${escapeAttr(empresaConfig.logo)}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
     else logoEl.textContent=(empresaConfig?.logoTexto||'OU').slice(0,2);
   }
-  if(countEl) countEl.textContent=list.length+' produtos';
-  area.innerHTML='<table class="catalog-table"><thead><tr><th style="width:60px">Foto</th><th>Produto</th><th>Categoria</th><th style="width:110px">Preço</th></tr></thead><tbody>'+list.map(p=>'<tr><td>'+(p.image?'<img src="'+p.image+'" loading="lazy">':'📦')+'</td><td><div style="font-weight:700;font-size:12px">'+p.name+'</div><div style="font-size:10px;color:#2E7D32;font-weight:700">✅ Disponível</div></td><td><span style="font-size:11px;background:var(--paper);padding:2px 6px;border-radius:999px">'+p.category+'</span></td><td style="font-weight:900;color:var(--gold)">R$ '+Number(p.price).toFixed(2).replace('.',',')+'</td></tr>').join('')+'</tbody></table>';
+  if(countEl) countEl.textContent=`${list.length} produtos`;
+  if(list.length===0){area.innerHTML='<div style="padding:30px;text-align:center;color:#888">Nenhum produto</div>';return}
+  if(type==='tabela'){
+    area.innerHTML=`<table class="catalog-table"><thead><tr><th style="width:60px">Foto</th><th>Produto</th><th>Categoria</th><th style="width:110px">Preço</th></tr></thead><tbody>${list.map(p=>`<tr><td>${p.image?`<img src="${escapeAttr(p.image)}" loading="lazy">`:'📦'}</td><td><div style="font-weight:700;font-size:12px">${escapeHtml(p.name)}</div><div style="font-size:10px;color:#888">${p.disponivel?'✅ Disponível':'🚫 Indisponível'}</div></td><td><span style="font-size:11px;background:var(--paper);padding:2px 6px;border-radius:999px">${escapeHtml(p.category)}</span></td><td style="font-weight:900;color:var(--gold);font-family:Fraunces,serif">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table>`;
+  } else if(type==='tabela_simples'){
+    area.innerHTML=`<table class="catalog-table"><thead><tr><th>#</th><th>Produto</th><th>Categoria</th><th>Preço</th></tr></thead><tbody>${list.map((p,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${escapeHtml(p.name)}</td><td>${escapeHtml(p.category)}</td><td style="font-weight:800;color:var(--gold)">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table>`;
+  } else if(type==='grade'){
+    area.innerHTML=`<div class="catalog-grid">${list.map(p=>`<div class="catalog-card">${p.image?`<img src="${escapeAttr(p.image)}" loading="lazy">`:'<div style="height:110px;background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:30px;border-radius:8px">📦</div>'}<div class="c-name">${escapeHtml(p.name)}</div><div class="c-price">${formatPrice(p.price)}</div><div class="c-cat">${escapeHtml(p.category)}</div></div>`).join('')}</div>`;
+  } else if(type==='lista_precos'){
+    area.innerHTML=`<div style="padding:12px"><table class="catalog-table"><thead><tr><th>Produto</th><th style="text-align:right">Preço</th></tr></thead><tbody>${list.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td style="text-align:right;font-weight:800">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
 }
 function printCatalog(){renderCatalogPreview();setTimeout(()=>{window.print();},300);}
 async function generateCatalogImage(){
   const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
-  showToast('🖼️ Gerando imagem elegante...');
-  const canvas=document.getElementById('catalogCanvas');const W=850;const headerH=110;const tableHeaderH=40;const rowH=68;const H=headerH+tableHeaderH+list.length*rowH+50;
-  canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#F0F3E9';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(10,10,W-20,H-20,16);ctx.fill();ctx.strokeStyle='#DEE4D6';ctx.lineWidth=1;ctx.stroke();
-  const grad=ctx.createLinearGradient(15,15,W-15,15);grad.addColorStop(0,'#1E4630');grad.addColorStop(1,'#2F7A52');ctx.fillStyle=grad;ctx.beginPath();ctx.roundRect(20,20,W-40,80,12);ctx.fill();
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(32,30,56,56,12);ctx.fill();ctx.fillStyle='#1E4630';ctx.font='bold 22px Arial';ctx.textAlign='center';ctx.fillText((empresaConfig?.logoTexto||'OU').slice(0,2),60,66);
-  ctx.fillStyle='#fff';ctx.font='bold 18px Arial';ctx.textAlign='left';ctx.fillText((empresaConfig?.nome||'OUXE Distribuidor')+' - Tabela de Preços',102,50);ctx.font='12px Arial';ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fillText((empresaConfig?.sub||'Produtos naturais')+' • '+new Date().toLocaleDateString('pt-BR'),102,68);
-  ctx.textAlign='right';ctx.font='bold 12px Arial';ctx.fillText(list.length+' produtos',W-40,50);
-  let y=headerH+20;ctx.fillStyle='#1E4630';ctx.fillRect(20,y,W-40,tableHeaderH);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.textAlign='left';ctx.fillText('Foto',32,y+24);ctx.fillText('Produto',95,y+24);ctx.fillText('Categoria',380,y+24);ctx.textAlign='right';ctx.fillText('Preço',W-40,y+24);y+=tableHeaderH;
-  const images={};const promises=list.map(p=>new Promise(res=>{if(!p.image){res();return}const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{images[p.id]=img;res();};img.onerror=()=>{res();};img.src=p.image;}));await Promise.all(promises);
-  list.forEach((p,i)=>{
-    if(i%2===0){ctx.fillStyle='#FAFBF6';}else{ctx.fillStyle='#fff';}
-    ctx.fillRect(20,y,W-40,rowH);ctx.fillStyle='#eee';ctx.fillRect(20,y+rowH-1,W-40,1);
-    ctx.fillStyle='#fff';ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(28,y+8,48,48,8);ctx.fill();ctx.stroke();
-    const img=images[p.id];if(img){try{ctx.save();ctx.beginPath();ctx.roundRect(28,y+8,48,48,8);ctx.clip();ctx.drawImage(img,28,y+8,48,48);ctx.restore();}catch(e){}}else{ctx.fillStyle='#ccc';ctx.font='20px Arial';ctx.textAlign='center';ctx.fillText('📦',52,y+38);}
-    ctx.fillStyle='#222';ctx.font='bold 11px Arial';ctx.textAlign='left';let name=p.name;if(name.length>42)name=name.slice(0,39)+'...';ctx.fillText(name,90,y+22);ctx.fillStyle='#2E7D32';ctx.font='bold 9px Arial';ctx.fillText('✅ Disponível',90,y+38);
-    ctx.fillStyle='#5C6B5E';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText(p.category,380,y+30);
-    ctx.fillStyle='#9C6B28';ctx.font='bold 13px Arial';ctx.textAlign='right';ctx.fillText('R$ '+Number(p.price).toFixed(2).replace('.',','),W-32,y+30);
-    y+=rowH;
-  });
-  ctx.fillStyle='#888';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText((empresaConfig?.nome||'OUXE')+' • '+new Date().toLocaleString('pt-BR'),W/2,H-18);
-  canvas.toBlob(async (blob)=>{
-    if(!blob){showToast('Erro');return}
-    const file=new File([blob],'tabela-precos-ouxe.png',{type:'image/png'});
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:'Tabela OUXE',text:(empresaConfig?.nome||'OUXE')+' - Tabela de Preços\n'+list.length+' produtos'});showToast('✅ Enviado!');return;}catch(e){if(e&&e.name==='AbortError')return;}}
-    const url=canvas.toDataURL('image/png');const a=document.createElement('a');a.href=url;a.download='tabela-precos-'+Date.now()+'.png';document.body.appendChild(a);a.click();a.remove();showToast('✅ Imagem baixada! Envie no WhatsApp');
-  },'image/png');
+  showToast('🖼️ Gerando imagem...');
+  const canvas=document.getElementById('catalogCanvas');const type=document.getElementById('catalogType')?.value||'tabela';
+  const W=800;const headerH=120;const rowH=type==='grade'?200:70;const cols=type==='grade'?3:1;const rows=Math.ceil(list.length/cols);const H=headerH+rows*rowH+60;
+  canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  const grad=ctx.createLinearGradient(0,0,W,0);grad.addColorStop(0,'#1E4630');grad.addColorStop(1,'#2F7A52');ctx.fillStyle=grad;ctx.fillRect(0,0,W,90);
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(20,16,56,56,12);ctx.fill();ctx.fillStyle='#1E4630';ctx.font='bold 24px Arial';ctx.textAlign='center';ctx.fillText(empresaConfig?.logoTexto||'OU',48,52);
+  ctx.fillStyle='#fff';ctx.font='bold 22px Arial';ctx.textAlign='left';ctx.fillText(empresaConfig?.nome||'OUXE Distribuidor',90,44);ctx.font='13px Arial';ctx.fillText('Tabela de Preços - '+new Date().toLocaleDateString('pt-BR'),90,62);
+  const images={};const loadPromises=list.map(p=>new Promise(res=>{if(!p.image){res();return}const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{images[p.id]=img;res();};img.onerror=()=>{res();};img.src=p.image;}));await Promise.all(loadPromises);
+  let y=headerH;if(type!=='grade'){ctx.fillStyle='#f5f5f5';ctx.fillRect(20,y-24,W-40,28);ctx.fillStyle='#333';ctx.textAlign='left';ctx.font='bold 12px Arial';ctx.fillText('Produto',30,y-6);ctx.textAlign='right';ctx.fillText('Preço',W-30,y-6);y+=10;}
+  if(type==='grade'){
+    let col=0,row=0;list.forEach((p)=>{const x=20+col*(W-40)/cols+5;const w=(W-50)/cols-10;const yy=y+row*rowH;ctx.fillStyle='#fff';ctx.strokeStyle='#e0e0e0';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(x,yy,w,rowH-10,10);ctx.fill();ctx.stroke();const img=images[p.id];if(img){try{ctx.drawImage(img,x+8,yy+8,w-16,70);}catch(e){}}else{ctx.fillStyle='#fafafa';ctx.fillRect(x+8,yy+8,w-16,70);ctx.fillStyle='#ccc';ctx.font='24px Arial';ctx.textAlign='center';ctx.fillText('📦',x+w/2,yy+50);}ctx.fillStyle='#222';ctx.font='bold 10px Arial';ctx.textAlign='left';let name=p.name;if(name.length>38)name=name.slice(0,35)+'...';const words=name.split(' ');let line='',lines=[],maxW=w-16;words.forEach(wd=>{const test=line?line+' '+wd:wd;if(ctx.measureText(test).width>maxW){lines.push(line);line=wd;}else line=test;});if(line)lines.push(line);lines.slice(0,2).forEach((ln,i)=>{ctx.fillText(ln,x+8,yy+90+i*12);});ctx.fillStyle='#9C6B28';ctx.font='bold 13px Arial';ctx.fillText('R$ '+Number(p.price).toFixed(2).replace('.',','),x+8,yy+118);col++;if(col>=cols){col=0;row++;}});
+  } else {
+    list.forEach((p,i)=>{if(i%2===0){ctx.fillStyle='#fafafa';ctx.fillRect(20,y-18,W-40,rowH-6);}const img=images[p.id];if(img){try{ctx.drawImage(img,30,y-14,40,40);}catch(e){}}else{ctx.fillStyle='#eee';ctx.fillRect(30,y-14,40,40);}ctx.fillStyle='#222';ctx.font='11px Arial';ctx.textAlign='left';let name=p.name;if(name.length>52)name=name.slice(0,49)+'...';ctx.fillText(name,80,y+6);ctx.textAlign='right';ctx.fillStyle='#9C6B28';ctx.font='bold 13px Arial';ctx.fillText('R$ '+Number(p.price).toFixed(2).replace('.',','),W-30,y+6);y+=rowH;});
+  }
+  ctx.fillStyle='#888';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText((empresaConfig?.nome||'OUXE')+' - '+new Date().toLocaleString('pt-BR'),W/2,H-12);
+  canvas.toBlob(async (blob)=>{if(!blob){showToast('Erro');return}const file=new File([blob],'catalogo-ouxe.png',{type:'image/png'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Catálogo OUXE',text:`${empresaConfig?.nome||'OUXE'} - Tabela\n${list.length} produtos`});showToast('✅ Compartilhado!');return;}catch(e){if(e&&e.name==='AbortError')return;}}const url=canvas.toDataURL('image/png');const a=document.createElement('a');a.href=url;a.download='catalogo-ouxe-'+Date.now()+'.png';document.body.appendChild(a);a.click();a.remove();showToast('✅ Imagem baixada!');},'image/png');
 }
-async function shareCatalogAsImage(){await generateCatalogImage();}
-function shareCatalog(){generateCatalogImage();}
+function shareCatalog(){
+  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  let text=`*${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela de Preços*%0A${list.length} produtos%0A%0A`;
+  list.slice(0,30).forEach(p=>{text+=`• ${encodeURIComponent(p.name)} - R$ ${Number(p.price).toFixed(2).replace('.',',')}%0A`;});
+  if(list.length>30) text+=`%0A... e mais ${list.length-30} produtos.%0A`;
+  window.open(`https://wa.me/?text=${text}`,'_blank');showToast('📱 Abrindo WhatsApp...');
+}
+function exportCatalogCSV(){
+  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  let csv='Nome,Preço,Categoria,Disponível\n';list.forEach(p=>{csv+=`"${p.name.replace(/"/g,'""')}",${p.price.toString().replace('.',',')},"${p.category}",${p.disponivel?'Sim':'Não'}\n`;});
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tabela-precos-ouxe-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);showToast('📊 CSV exportado!');
+}
+function copyCatalogText(){
+  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  let text=`${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela\n${list.length} produtos\n\n`;list.forEach(p=>{text+=`${p.name} - ${formatPrice(p.price)} - ${p.category}\n`;});
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiado!')).catch(()=>fallbackCopy(text))}else fallbackCopy(text);
+}
 
 
 (async function initApp(){
@@ -1574,7 +1613,11 @@ function shareCatalog(){generateCatalogImage();}
     try{localStorage.removeItem('ouxe-products');}catch(e){}
     try{localStorage.removeItem(LS_PRODUCTS);}catch(e){}
     window._hasUnsavedChanges=false;
-    const si=document.getElementById('searchInput');if(si){si.value='';searchTerm='';}
+    const si=document.getElementById('searchInput');if(si){si.value='';searchTerm='';si.setAttribute('autocomplete','off');}
+    // Limpa novamente após 500ms para vencer autofill do navegador
+    setTimeout(()=>{const s=document.getElementById('searchInput');if(s){s.value='';} searchTerm=''; renderProducts();},600);
+    // Também limpa quando a página volta do cache
+    window.addEventListener('pageshow',()=>{const s=document.getElementById('searchInput');if(s){s.value='';} searchTerm=''; renderProducts();});
     await loadProducts();
     cart=safeParse(LS_CART,[]);
     renderCategories();renderProducts();updateCartBadge();renderBackupInfo();updateDash();
