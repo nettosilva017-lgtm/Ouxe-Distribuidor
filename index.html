@@ -440,7 +440,7 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
         <div class="form-group"><label>Tipo</label><select id="catalogType" onchange="renderCatalogPreview()"><option value="tabela">📋 Tabela com fotos</option><option value="tabela_simples">📄 Tabela simples</option><option value="grade">🖼️ Grade fotos grandes</option><option value="lista_precos">💲 Lista curta</option></select></div>
         <div class="form-group"><label>Categoria</label><select id="catalogCategory" onchange="renderCatalogPreview()"><option value="Todas">Todas</option><option value="Cosméticos">Cosméticos</option><option value="Produtos Naturais">Produtos Naturais</option><option value="Alimentos">Alimentos</option><option value="Limpeza">Limpeza</option><option value="Bebidas">Bebidas</option><option value="Acessórios">Acessórios</option><option value="Outros">Outros</option></select></div>
         <div class="form-group"><label>Ordenar</label><select id="catalogSort" onchange="renderCatalogPreview()"><option value="nome">Nome A-Z</option><option value="preco_menor">Menor preço</option><option value="preco_maior">Maior preço</option><option value="categoria">Categoria</option></select></div>
-        <div class="form-group"><label><input type="checkbox" id="catalogOnlyAvailable" checked onchange="renderCatalogPreview()"> Só disponíveis</label></div>
+        <div class="form-group"><label><input type="checkbox" id="catalogOnlyAvailable" onchange="renderCatalogPreview()"> Só disponíveis</label></div>
       </div>
       <div class="catalog-actions">
         <button class="btn-primary" onclick="renderCatalogPreview()">🔄 Atualizar</button>
@@ -1360,7 +1360,7 @@ function saveProduct(){
     products.push(newProd);showToast('✓ Produto adicionado');
   }
   products=cloneProducts(products);
-  saveProducts();renderProducts();renderAdminList();updateDash();cancelEdit();
+  saveProducts();renderProducts();renderAdminList();updateDash();try{if(document.getElementById('catalogPreviewArea')) renderCatalogPreview();}catch(e){}cancelEdit();
 }
 function cancelEdit(){
   editingId=null;
@@ -1523,13 +1523,17 @@ function salvarPromo(){showToast('✅ Promoção salva! Veja na aba Promoção')
 // Init
 
 // CATÁLOGO
-function getCatalogProducts(){
+function getCatalogProducts(forceAll){
+  // forceAll = true => ignora filtros e retorna TODOS os produtos (usado no relatório admin)
   const cat=document.getElementById('catalogCategory')?.value||'Todas';
   const onlyAvail=document.getElementById('catalogOnlyAvailable')?.checked;
   const sort=document.getElementById('catalogSort')?.value||'nome';
-  let list=products.slice();
-  if(cat!=='Todas') list=list.filter(p=>p.category===cat);
-  if(onlyAvail) list=list.filter(p=>p.disponivel);
+  let list=products.slice(); // sempre parte da lista completa atualizada
+  // Só filtra se não for forçado e se o usuário realmente selecionou algo diferente de "Todas"
+  if(!forceAll){
+    if(cat!=='Todas') list=list.filter(p=>p.category===cat);
+    if(onlyAvail) list=list.filter(p=>p.disponivel);
+  }
   if(sort==='nome') list.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
   else if(sort==='preco_menor') list.sort((a,b)=>a.price-b.price);
   else if(sort==='preco_maior') list.sort((a,b)=>b.price-a.price);
@@ -1567,9 +1571,9 @@ function renderCatalogPreview(){
     area.innerHTML=`<div style="padding:12px"><table class="catalog-table"><thead><tr><th>Produto</th><th style="text-align:right">Preço</th></tr></thead><tbody>${list.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td style="text-align:right;font-weight:800">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table></div>`;
   }
 }
-function printCatalog(){renderCatalogPreview();setTimeout(()=>{window.print();},300);}
+function printCatalog(){const list=getCatalogProducts(true); if(list.length===0){showToast('Nenhum produto');return} renderCatalogPreview();setTimeout(()=>{window.print();},300);}
 async function generateCatalogImage(){
-  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   showToast('🖼️ Gerando imagem...');
   const canvas=document.getElementById('catalogCanvas');const type=document.getElementById('catalogType')?.value||'tabela';
   const W=800;const headerH=120;const rowH=type==='grade'?200:70;const cols=type==='grade'?3:1;const rows=Math.ceil(list.length/cols);const H=headerH+rows*rowH+60;
@@ -1588,19 +1592,19 @@ async function generateCatalogImage(){
   canvas.toBlob(async (blob)=>{if(!blob){showToast('Erro');return}const file=new File([blob],'catalogo-ouxe.png',{type:'image/png'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Catálogo OUXE',text:`${empresaConfig?.nome||'OUXE'} - Tabela\n${list.length} produtos`});showToast('✅ Compartilhado!');return;}catch(e){if(e&&e.name==='AbortError')return;}}const url=canvas.toDataURL('image/png');const a=document.createElement('a');a.href=url;a.download='catalogo-ouxe-'+Date.now()+'.png';document.body.appendChild(a);a.click();a.remove();showToast('✅ Imagem baixada!');},'image/png');
 }
 function shareCatalog(){
-  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   let text=`*${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela de Preços*%0A${list.length} produtos%0A%0A`;
   list.slice(0,30).forEach(p=>{text+=`• ${encodeURIComponent(p.name)} - R$ ${Number(p.price).toFixed(2).replace('.',',')}%0A`;});
   if(list.length>30) text+=`%0A... e mais ${list.length-30} produtos.%0A`;
   window.open(`https://wa.me/?text=${text}`,'_blank');showToast('📱 Abrindo WhatsApp...');
 }
 function exportCatalogCSV(){
-  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   let csv='Nome,Preço,Categoria,Disponível\n';list.forEach(p=>{csv+=`"${p.name.replace(/"/g,'""')}",${p.price.toString().replace('.',',')},"${p.category}",${p.disponivel?'Sim':'Não'}\n`;});
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tabela-precos-ouxe-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);showToast('📊 CSV exportado!');
 }
 function copyCatalogText(){
-  const list=getCatalogProducts();if(list.length===0){showToast('Nenhum produto');return}
+  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   let text=`${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela\n${list.length} produtos\n\n`;list.forEach(p=>{text+=`${p.name} - ${formatPrice(p.price)} - ${p.category}\n`;});
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiado!')).catch(()=>fallbackCopy(text))}else fallbackCopy(text);
 }
