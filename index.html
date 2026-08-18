@@ -1,85 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
-<!-- FIX WhatsApp In-App Browser - v4 -->
-<script>
-(function(){
-  const ua = navigator.userAgent || navigator.vendor || '';
-  const isInApp = /WhatsApp|FBAN|FBAV|FB_IAB|FBAN\/Messenger|Instagram/i.test(ua);
-  window.__isWhatsAppBrowser = isInApp;
-  if(isInApp){
-    document.addEventListener('DOMContentLoaded', ()=>{
-      if(document.getElementById('wa-fix-banner')) return;
-      const banner=document.createElement('div');
-      banner.id='wa-fix-banner';
-      banner.innerHTML=`
-        <div style="background:#FFEB3B;color:#000;padding:12px 16px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;position:fixed;top:0;left:0;right:0;z-index:999999;box-shadow:0 4px 16px rgba(0,0,0,.25);line-height:1.3">
-          <div style="font-weight:800;font-size:14px">⚠️ Você está no WhatsApp</div>
-          <div style="font-size:12.5px;margin:4px 0 8px">O WhatsApp bloqueia downloads e instalação. Abra no navegador para baixar.</div>
-          <button id="btnAbrirNavegador" style="background:#000;color:#fff;border:none;padding:11px 20px;border-radius:999px;font-weight:800;cursor:pointer;font-size:13px">🌐 ABRIR NO NAVEGADOR</button>
-          <div style="font-size:10.5px;margin-top:7px;opacity:.75">Android: toque nos 3 pontos ⋮ > Abrir no navegador<br>iPhone: ícone de compartilhar [] > Abrir no Safari</div>
-        </div>`;
-      document.body.prepend(banner);
-      document.body.style.paddingTop='118px';
-      document.getElementById('btnAbrirNavegador')?.addEventListener('click', ()=>{
-        const url=location.href;
-        if(/Android/i.test(navigator.userAgent)){
-          try{ location.href='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;end'; }catch(e){}
-          setTimeout(()=>window.open(url,'_blank'),600);
-        } else {
-          window.open(url,'_blank');
-        }
-      });
-    });
-  }
-  window.abrirNoNavegador = function(){
-    const url=location.href;
-    if(/Android/i.test(navigator.userAgent)){
-      try{ location.href='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;end'; }catch(e){}
-      setTimeout(()=>window.open(url,'_blank'),600);
-    } else {
-      window.open(url,'_blank');
-    }
-  };
-})();
-</script>
-<script>
-// FIX universal para downloads bloqueados no WhatsApp
-function downloadBlobUniversal(blob, fileName){
-  const url = URL.createObjectURL(blob);
-  const isInApp = window.__isWhatsAppBrowser || /WhatsApp|FBAN|FBAV/i.test(navigator.userAgent);
-  // 1. Tenta compartilhar nativo (melhor no mobile)
-  try{
-    const file = new File([blob], fileName, {type: blob.type});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({files:[file], title: fileName, text: fileName}).then(()=>{
-        setTimeout(()=>URL.revokeObjectURL(url),3000);
-      }).catch(()=>{
-        // se cancelar, tenta fallback
-        if(isInApp){
-          window.open(url,'_blank');
-          if(typeof showToast==='function') showToast('📱 Arquivo aberto! Toque e segure para salvar');
-        }
-      });
-      return;
-    }
-  }catch(e){}
-
-  if(isInApp){
-    window.open(url,'_blank');
-    if(typeof showToast==='function') showToast('📱 Abrindo... Toque e segure na imagem para salvar');
-    setTimeout(()=>URL.revokeObjectURL(url), 10000);
-  } else {
-    const a=document.createElement('a');
-    a.href=url; a.download=fileName; a.style.display='none';
-    document.body.appendChild(a); a.click();
-    setTimeout(()=>{a.remove(); URL.revokeObjectURL(url);},1500);
-  }
-}
-</script>
-<!-- FIM FIX WhatsApp -->
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1E4630">
@@ -2026,7 +1947,7 @@ async function generateCatalogImage(){
     list.forEach((p,i)=>{if(i%2===0){ctx.fillStyle='#fafafa';ctx.fillRect(20,y-18,W-40,rowH-6);}const img=images[p.id];if(img){try{ctx.drawImage(img,30,y-14,40,40);}catch(e){}}else{ctx.fillStyle='#eee';ctx.fillRect(30,y-14,40,40);}ctx.fillStyle='#222';ctx.font='11px Arial';ctx.textAlign='left';let name=p.name;if(name.length>52)name=name.slice(0,49)+'...';ctx.fillText(name,80,y+6);ctx.textAlign='right';ctx.fillStyle='#9C6B28';ctx.font='bold 13px Arial';ctx.fillText('R$ '+Number(p.price).toFixed(2).replace('.',','),W-30,y+6);y+=rowH;});
   }
   ctx.fillStyle='#888';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText((empresaConfig?.nome||'OUXE')+' - '+new Date().toLocaleString('pt-BR'),W/2,H-12);
-  canvas.toBlob(async (blob)=>{if(!blob){showToast('Erro ao gerar imagem');return} downloadBlobUniversal(blob, 'catalogo-ouxe-'+Date.now()+'.png'); showToast('✅ Pronto!'); },'image/png');
+  canvas.toBlob(async (blob)=>{if(!blob){showToast('Erro');return}const file=new File([blob],'catalogo-ouxe.png',{type:'image/png'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Catálogo OUXE',text:`${empresaConfig?.nome||'OUXE'} - Tabela\n${list.length} produtos`});showToast('✅ Compartilhado!');return;}catch(e){if(e&&e.name==='AbortError')return;}}const url=canvas.toDataURL('image/png');const a=document.createElement('a');a.href=url;a.download='catalogo-ouxe-'+Date.now()+'.png';document.body.appendChild(a);a.click();a.remove();showToast('✅ Imagem baixada!');},'image/png');
 }
 function shareCatalog(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
@@ -2038,7 +1959,7 @@ function shareCatalog(){
 function exportCatalogCSV(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   let csv='Nome,Preço,Categoria,Disponível\n';list.forEach(p=>{csv+=`"${p.name.replace(/"/g,'""')}",${p.price.toString().replace('.',',')},"${p.category}",${p.disponivel?'Sim':'Não'}\n`;});
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); downloadBlobUniversal(blob, 'tabela-precos-ouxe-'+new Date().toISOString().slice(0,10)+'.csv'); showToast('📊 CSV exportado!');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tabela-precos-ouxe-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);showToast('📊 CSV exportado!');
 }
 function copyCatalogText(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
@@ -2090,18 +2011,5 @@ function copyCatalogText(){
   }
 })();
 </script>
-
-<script>
-// Registra SW corrigido com update forçado
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').then(reg=>{
-      reg.update();
-      console.log('SW v4 registrado');
-    }).catch(e=>console.log('SW erro',e));
-  });
-}
-</script>
-
 </body>
 </html>
