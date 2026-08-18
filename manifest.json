@@ -2,10 +2,10 @@
   "name": "OUXE Distribuidor",
   "short_name": "OUXE",
   "description": "OUXE Distribuidor - Produtos naturais, cosméticos e alimentos. Faça seu pedido pelo WhatsApp.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay"],
+  "display_override": ["standalone", "browser"],
   "orientation": "any",
   "background_color": "#1E4630",
   "theme_color": "#1E4630",
@@ -28,7 +28,7 @@
     {
       "name": "Fazer Pedido",
       "description": "Abrir catálogo e fazer pedido",
-      "url": "./"
+      "url": "/?utm_source=shortcut"
     }
   ]
 }
