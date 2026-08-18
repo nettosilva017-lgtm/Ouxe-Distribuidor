@@ -1,22 +1,18 @@
-// OUXE Distribuidor - Service Worker v4 - FIX WhatsApp
-const CACHE_NAME = 'ouxe-v4-stable';
+// OUXE Distribuidor - Service Worker v3 - Fix mobile download/install
+const CACHE_NAME = 'ouxe-v3-' + new Date().toISOString().slice(0,10);
 const CORE_ASSETS = [
   './',
   './index.html',
-  './manifest.json'
-  // REMOVIDO icon-192.png e icon-512.png daqui - se não existir quebra o install
-  // Eles serão cacheados sob demanda
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(CORE_ASSETS).catch(err=>{
-        console.log('SW cache addAll parcial', err);
-        // tenta um por um
-        return Promise.allSettled(CORE_ASSETS.map(u=>cache.add(new Request(u,{cache:'reload'}))));
-      });
+      return cache.addAll(CORE_ASSETS.map(url => new Request(url, {cache: 'reload'}))).catch(()=>{});
     })
   );
 });
@@ -33,26 +29,27 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  // NÃ£o cacheia chamadas externas (wa.me, fonts)
   if (url.origin !== location.origin) return;
-  // Ignora chamadas de API ou wa.me
-  if (url.pathname.includes('/api/')) return;
-
+  
+  // Para navegaÃ§Ã£o (index.html) - network first para sempre pegar versÃ£o nova
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req).then(res => {
         const copy = res.clone();
         caches.open(CACHE_NAME).then(c => c.put(req, copy));
         return res;
-      }).catch(()=> caches.match('./index.html').then(r => r || caches.match('./')) || caches.match('/'))
+      }).catch(()=> caches.match('./index.html').then(r => r || caches.match('./')))
     );
     return;
   }
 
+  // Para assets locais - cache first
   event.respondWith(
     caches.match(req).then(cached => {
       if (cached) return cached;
       return fetch(req).then(res => {
-        if (res.ok && res.type === 'basic') {
+        if (res.ok) {
           const copy = res.clone();
           caches.open(CACHE_NAME).then(c => c.put(req, copy));
         }
