@@ -2009,9 +2009,9 @@ function getCatalogProducts(forceAll){
   else if(sort==='categoria') list.sort((a,b)=>(a.category+b.name).localeCompare(b.category+a.name,'pt-BR'));
   return list;
 }
-function renderCatalogPreview(){
+function renderCatalogPreview(forceAll=false){
   const type=document.getElementById('catalogType')?.value||'tabela';
-  const list=getCatalogProducts();
+  const list=getCatalogProducts(forceAll);
   const area=document.getElementById('catalogPreviewArea');
   const countEl=document.getElementById('catalogCount');
   const dateEl=document.getElementById('catalogDatePrint');
@@ -2023,7 +2023,7 @@ function renderCatalogPreview(){
   if(titleEl) titleEl.textContent=(empresaConfig?.nome||'OUXE Distribuidor')+' - Tabela de Preços';
   const subEl=document.getElementById('catalogSubPrint');
   if(subEl) subEl.innerHTML=`${escapeHtml(empresaConfig?.sub||'Produtos naturais e cosméticos')} • Gerado em <span>${new Date().toLocaleDateString('pt-BR')}</span>`;
-  if(infoEl) infoEl.innerHTML=`${list.length} produtos<br>${document.getElementById('catalogCategory')?.value||'Todas'}`;
+  if(infoEl) infoEl.innerHTML=`${list.length} produtos<br>${forceAll?'Todas':(document.getElementById('catalogCategory')?.value||'Todas')}`;
   if(logoEl){
     if(empresaConfig?.logo) logoEl.innerHTML=`<img src="${escapeAttr(empresaConfig.logo)}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">`;
     else logoEl.textContent=(empresaConfig?.logoTexto||'OU').slice(0,2);
@@ -2040,7 +2040,14 @@ function renderCatalogPreview(){
     area.innerHTML=`<div style="padding:12px"><table class="catalog-table"><thead><tr><th>Produto</th><th style="text-align:right">Preço</th></tr></thead><tbody>${list.map(p=>`<tr><td>${escapeHtml(p.name)}</td><td style="text-align:right;font-weight:800">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table></div>`;
   }
 }
-function printCatalog(){const list=getCatalogProducts(true); if(list.length===0){showToast('Nenhum produto');return} renderCatalogPreview();setTimeout(()=>{window.print();},300);}
+function printCatalog(){
+  const list=getCatalogProducts(true);
+  if(list.length===0){showToast('Nenhum produto');return}
+  // O relatório/PDF deve sempre usar a lista completa e única de produtos,
+  // independentemente dos filtros atualmente selecionados na tela.
+  renderCatalogPreview(true);
+  setTimeout(()=>{window.print();},300);
+}
 async function generateCatalogImage(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   showToast('🖼️ Gerando imagem...');
