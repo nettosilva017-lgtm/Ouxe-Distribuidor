@@ -1251,6 +1251,7 @@ async function sendWhatsAppWithImage(){
   const totalBruto=cart.reduce((s,c)=>s+(c.qty*Number(c.price||0)),0);
   const desconto=(typeof calculateDiscount==='function'?calculateDiscount(totalBruto):0);
   const total=Math.max(0,totalBruto-desconto);
+  const cupomAtivo = (typeof appliedCoupon!=='undefined' && appliedCoupon) ? appliedCoupon : null;
   ctx.textAlign='left';
   ctx.fillStyle='#555555';
   ctx.font='400 16px Arial';
@@ -1260,25 +1261,18 @@ async function sendWhatsAppWithImage(){
   ctx.font='800 16px Arial';
   ctx.fillText('R$ '+totalBruto.toFixed(2).replace('.', ','), W-padding, y);
   y+=32;
-  ctx.textAlign='left';
-  ctx.fillStyle='#555555';
-  ctx.font='400 16px Arial';
-  ctx.fillText('Frete', W-300, y);
-  ctx.textAlign='right';
-  ctx.fillStyle='#000000';
-  ctx.font='800 16px Arial';
-  ctx.fillText('R$ 0,00', W-padding, y);
-  y+=32;
-  ctx.textAlign='left';
-  ctx.fillStyle='#555555';
-  ctx.font='400 16px Arial';
-  ctx.fillText('Desconto', W-300, y);
-  ctx.textAlign='right';
-  ctx.fillStyle='#000000';
-  ctx.font='800 16px Arial';
-  if(desconto>0) ctx.fillText('- R$ '+desconto.toFixed(2).replace('.', ','), W-padding, y);
-  else ctx.fillText('R$ 0,00', W-padding, y);
-  y+=28;
+  if(cupomAtivo && desconto>0){
+    ctx.textAlign='left';
+    ctx.fillStyle='#1E4630';
+    ctx.font='800 14px Arial';
+    ctx.fillText('Cupom: '+cupomAtivo.code.toUpperCase(), W-300, y);
+    ctx.textAlign='right';
+    ctx.fillStyle='#1E4630';
+    ctx.font='800 16px Arial';
+    ctx.fillText('- R$ '+desconto.toFixed(2).replace('.', ','), W-padding, y);
+    y+=32;
+  }
+  y+=10;
   const totalBoxW=340;
   const totalBoxH=52;
   const totalBoxX=W-padding-totalBoxW;
