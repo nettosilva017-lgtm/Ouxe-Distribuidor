@@ -1966,6 +1966,38 @@ function getCatalogProducts(forceAll){
   const onlyAvail=document.getElementById('catalogOnlyAvailable')?.checked;
   const sort=document.getElementById('catalogSort')?.value||'nome';
   let list=products.slice(); // sempre parte da lista completa atualizada
+  // Remove produtos duplicados
+  // 1ª passada: mesmo id repetido na base (mantém a versão com foto, se houver)
+  const byId=new Map();
+  const step1=[];
+  list.forEach(p=>{
+    if(!p.id){ step1.push(p); return; }
+    const existing=byId.get(p.id);
+    if(!existing){ byId.set(p.id,p); step1.push(p); }
+    else if(!existing.image && p.image){
+      const idx=step1.indexOf(existing);
+      if(idx>-1) step1[idx]=p;
+      byId.set(p.id,p);
+    }
+  });
+  list=step1;
+  // 2ª passada: mesmo nome+preço com ids diferentes (produto importado 2x)
+  // mantém a versão com foto quando existir uma duplicata sem foto
+  const byNamePrice=new Map();
+  const deduped=[];
+  list.forEach(p=>{
+    const key=String(p.name||'').trim().toUpperCase()+'|'+Number(p.price||0);
+    const existing=byNamePrice.get(key);
+    if(!existing){
+      byNamePrice.set(key,p);
+      deduped.push(p);
+    }else if(!existing.image && p.image){
+      const idx=deduped.indexOf(existing);
+      if(idx>-1) deduped[idx]=p;
+      byNamePrice.set(key,p);
+    }
+  });
+  list=deduped;
   // Só filtra se não for forçado e se o usuário realmente selecionou algo diferente de "Todas"
   if(!forceAll){
     if(cat!=='Todas') list=list.filter(p=>p.category===cat);
@@ -1999,7 +2031,7 @@ function renderCatalogPreview(){
   if(countEl) countEl.textContent=`${list.length} produtos`;
   if(list.length===0){area.innerHTML='<div style="padding:30px;text-align:center;color:#888">Nenhum produto</div>';return}
   if(type==='tabela'){
-    area.innerHTML=`<table class="catalog-table"><thead><tr><th style="width:60px">Foto</th><th>Produto</th><th>Categoria</th><th style="width:110px">Preço</th></tr></thead><tbody>${list.map(p=>`<tr><td>${p.image?`<img src="${escapeAttr(p.image)}" loading="lazy">`:'📦'}</td><td><div style="font-weight:700;font-size:12px">${escapeHtml(p.name)}</div><div style="font-size:10px;color:#888">${p.disponivel?'✅ Disponível':'🚫 Indisponível'}</div></td><td><span style="font-size:11px;background:var(--paper);padding:2px 6px;border-radius:999px">${escapeHtml(p.category)}</span></td><td style="font-weight:900;color:var(--gold);font-family:Fraunces,serif">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table>`;
+    area.innerHTML=`<table class="catalog-table"><thead><tr><th style="width:60px">Foto</th><th>Descrição</th><th>Categoria</th><th style="width:110px">Preço</th></tr></thead><tbody>${list.map(p=>`<tr><td>${p.image?`<img src="${escapeAttr(p.image)}" loading="lazy">`:'📦'}</td><td><div style="font-weight:700;font-size:12px">${escapeHtml(p.name)}</div><div style="font-size:10px;color:#888">${p.disponivel?'✅ Disponível':'🚫 Indisponível'}</div></td><td><span style="font-size:11px;background:var(--paper);padding:2px 6px;border-radius:999px">${escapeHtml(p.category)}</span></td><td style="font-weight:900;color:var(--gold);font-family:Fraunces,serif">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table>`;
   } else if(type==='tabela_simples'){
     area.innerHTML=`<table class="catalog-table"><thead><tr><th>#</th><th>Produto</th><th>Categoria</th><th>Preço</th></tr></thead><tbody>${list.map((p,i)=>`<tr><td>${i+1}</td><td style="font-weight:600">${escapeHtml(p.name)}</td><td>${escapeHtml(p.category)}</td><td style="font-weight:800;color:var(--gold)">${formatPrice(p.price)}</td></tr>`).join('')}</tbody></table>`;
   } else if(type==='grade'){
