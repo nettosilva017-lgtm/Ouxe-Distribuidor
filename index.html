@@ -1981,20 +1981,30 @@ function getCatalogProducts(forceAll){
     }
   });
   list=step1;
-  // 2ª passada: mesmo nome+preço com ids diferentes (produto importado 2x)
-  // mantém a versão com foto quando existir uma duplicata sem foto
-  const byNamePrice=new Map();
+  // 2ª passada: elimina qualquer produto repetido no relatório.
+  // A comparação usa somente o nome normalizado, pois o mesmo produto
+  // não deve aparecer duas vezes no PDF mesmo que tenha ids, categorias
+  // ou preços diferentes na base.
+  const byName=new Map();
   const deduped=[];
   list.forEach(p=>{
-    const key=String(p.name||'').trim().toUpperCase()+'|'+Number(p.price||0);
-    const existing=byNamePrice.get(key);
+    const key=String(p.name||'')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .replace(/\s+/g,' ')
+      .trim()
+      .toUpperCase();
+
+    if(!key)return;
+
+    const existing=byName.get(key);
     if(!existing){
-      byNamePrice.set(key,p);
+      byName.set(key,p);
       deduped.push(p);
     }else if(!existing.image && p.image){
       const idx=deduped.indexOf(existing);
-      if(idx>-1) deduped[idx]=p;
-      byNamePrice.set(key,p);
+      if(idx>-1)deduped[idx]=p;
+      byName.set(key,p);
     }
   });
   list=deduped;
@@ -2043,11 +2053,61 @@ function renderCatalogPreview(forceAll=false){
 function printCatalog(){
   const list=getCatalogProducts(true);
   if(list.length===0){showToast('Nenhum produto');return}
-  // O relatório/PDF deve sempre usar a lista completa e única de produtos,
-  // independentemente dos filtros atualmente selecionados na tela.
   renderCatalogPreview(true);
-  setTimeout(()=>{window.print();},300);
+
+  setTimeout(()=>{
+    const source=document.getElementById('catalogPrintArea');
+    if(!source){showToast('Erro ao preparar relatório');return}
+
+    const win=window.open('','_blank','width=900,height=700');
+    if(!win){showToast('Permita pop-ups para imprimir o relatório');return}
+
+    const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+
+    win.document.open();
+    win.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(empresaConfig?.nome||'OUXE')} - Tabela de Preços</title>
+<style>
+${styles}
+html,body{margin:0;padding:0;background:#fff}
+body{font-family:Arial,sans-serif}
+#catalogPrintArea{display:block!important;visibility:visible!important;position:static!important;width:100%!important;padding:20px!important;box-sizing:border-box}
+#catalogPrintArea *{visibility:visible!important}
+@media print{
+ @page{size:A4;margin:10mm}
+ html,body{margin:0!important;padding:0!important}
+ #catalogPrintArea{width:100%!important;padding:0!important}
+ .catalog-table{width:100%;border-collapse:collapse}
+ .catalog-table tr{break-inside:avoid;page-break-inside:avoid}
+ .catalog-table thead{display:table-header-group}
+ .catalog-card{break-inside:avoid;page-break-inside:avoid}
 }
+</style>
+</head>
+<body>
+${source.outerHTML}
+</body>
+</html>`);
+    win.document.close();
+
+    const imgs=[...win.document.images];
+    Promise.all(imgs.map(img=>new Promise(resolve=>{
+      if(img.complete)return resolve();
+      img.onload=resolve; img.onerror=resolve;
+    }))).then(()=>{
+      setTimeout(()=>{
+        win.focus();
+        win.print();
+        win.onafterprint=()=>win.close();
+      },250);
+    });
+  },150);
+}
+
+
 async function generateCatalogImage(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   showToast('🖼️ Gerando imagem...');
