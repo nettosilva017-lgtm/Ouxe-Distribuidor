@@ -1135,352 +1135,192 @@ async function sendWhatsAppWithImage(){
   if(customerName.length<3){showToast('Nome muito curto');return}
   try{localStorage.setItem('ouxe-customer', JSON.stringify({name:customerName,city:customerCity}));}catch(e){}
   try{safeSet(LS_CUSTOMER,{name:customerName,city:customerCity});}catch(e){}
-  showToast('✨ Gerando formulário elegante...');
+  showToast('✨ Gerando pedido...');
   try{speakObrigadoMilionario()}catch(e){}
 
-  const W=1440;
-  const padding=48;
-  const headerH=280;
-  const clientH=200;
-  const rowH=148;
-  const tableHeaderH=72;
-  const footerH=280;
-  const H=headerH+clientH+tableHeaderH+(cart.length*rowH)+footerH;
+  const W=1280;
+  const padding=64;
+  const headerH=160;
+  const infoH=110;
+  const tableHeaderH=56;
+  const rowH=62;
+  const summaryH=180;
+  const footerH=40;
+  const H=headerH+infoH+tableHeaderH+(cart.length*rowH)+summaryH+footerH+60;
 
   const canvas=document.createElement('canvas');
   const ctx=canvas.getContext('2d');
   canvas.width=W;
   canvas.height=H;
-
-  ctx.fillStyle='#F0F3E9';
+  ctx.fillStyle='#FFFFFF';
   ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#FFFFFF';
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(0,0,W,H,32); else ctx.rect(0,0,W,H);
-  ctx.fill();
 
-  const grad=ctx.createLinearGradient(0,0,W,0);
-  grad.addColorStop(0,'#1E4630');
-  grad.addColorStop(0.5,'#2F6A4A');
-  grad.addColorStop(1,'#2F7A52');
-  ctx.fillStyle=grad;
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(0,0,W,headerH,32); else ctx.rect(0,0,W,headerH);
-  ctx.fill();
-  ctx.fillRect(0,headerH-32,W,32);
-
-  ctx.fillStyle='rgba(156,107,40,0.18)';
-  ctx.beginPath();
-  ctx.arc(W-100, 60, 140, 0, Math.PI*2);
-  ctx.fill();
-
-  const logoX=padding+12;
-  const logoY=26;
-  const logoSize=110;
-  ctx.shadowColor='rgba(0,0,0,0.18)';
-  ctx.shadowBlur=18;
-  ctx.shadowOffsetY=5;
-  ctx.fillStyle='#FFFFFF';
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(logoX, logoY, logoSize, logoSize, 18); else ctx.rect(logoX, logoY, logoSize, logoSize);
-  ctx.fill();
-  ctx.shadowColor='transparent';
-
+  const logoSize=84;
+  const logoX=padding;
+  const logoY=36;
   ctx.fillStyle='#1E4630';
-  ctx.font='800 44px Fraunces, Georgia, serif';
+  ctx.beginPath();
+  ctx.roundRect(logoX, logoY, logoSize, logoSize, 18);
+  ctx.fill();
+  ctx.fillStyle='#FFFFFF';
+  ctx.font='900 32px Arial Black';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  try{ctx.fillText((empresaConfig?.logoTexto||'OU').slice(0,2).toUpperCase(), logoX+logoSize/2, logoY+logoSize/2);}catch(e){}
+  const logoText=(empresaConfig?.logoTexto||'OD').slice(0,2).toUpperCase();
+  ctx.fillText(logoText, logoX+logoSize/2, logoY+logoSize/2);
 
   ctx.textAlign='left';
   ctx.textBaseline='alphabetic';
-  ctx.fillStyle='#FFFFFF';
-  ctx.font='800 44px Arial';
-  try{ctx.fillText(empresaConfig?.nome||'OUXE Distribuidor', logoX+logoSize+20, logoY+28);}catch(e){}
+  ctx.fillStyle='#1E3A2F';
+  ctx.font='900 36px Arial Black';
+  ctx.fillText('OUXE DISTRIBUIDOR', logoX+logoSize+20, logoY+38);
+  ctx.fillStyle='#8A9A93';
+  ctx.font='700 15px Arial';
+  ctx.fillText('PEDIDO DE VENDA', logoX+logoSize+20, logoY+62);
 
-  ctx.fillStyle='rgba(255,255,255,0.85)';
-  ctx.font='600 20px Arial';
-  ctx.fillText('Formulario de Pedido - Espelho de Venda', logoX+logoSize+20, logoY+58);
-
-  const now=new Date();
-  const dateStr=now.toLocaleDateString('pt-BR');
-  const timeStr=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const dateText='📅 '+dateStr+' as '+timeStr;
-  ctx.font='700 17px Arial';
-  const dateW=ctx.measureText(dateText).width+36;
-  ctx.fillStyle='rgba(255,255,255,0.18)';
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(logoX+logoSize+20, logoY+78, dateW, 30, 15); else ctx.rect(logoX+logoSize+20, logoY+78, dateW, 30);
-  ctx.fill();
-  ctx.fillStyle='#FFFFFF';
-  ctx.fillText(dateText, logoX+logoSize+34, logoY+97);
-
-  let y=headerH+20;
-  ctx.fillStyle='#FFFFFF';
-  ctx.strokeStyle='#E1EEE2';
-  ctx.lineWidth=1.5;
-  ctx.shadowColor='rgba(30,70,48,0.06)';
-  ctx.shadowBlur=16;
-  ctx.shadowOffsetY=4;
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(padding, y, W-padding*2, clientH-20, 20); else ctx.rect(padding, y, W-padding*2, clientH-20);
-  ctx.fill();
-  ctx.stroke();
-  ctx.shadowColor='transparent';
-
-  ctx.fillStyle='#9C6B28';
-  ctx.fillRect(padding+20, y, W-padding*2-40, 3);
-
+  let y=headerH;
   ctx.fillStyle='#1E4630';
-  ctx.font='800 18px Arial';
-  ctx.textAlign='left';
-  ctx.fillText('DADOS DO CLIENTE', padding+24, y+32);
+  ctx.fillRect(padding, y, W-padding*2, 4);
+  y+=24;
 
-  ctx.fillStyle='#F7FBF7';
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(padding+20, y+48, (W-padding*2)/2-30, 56, 12); else ctx.rect(padding+20, y+48, (W-padding*2)/2-30, 56);
-  ctx.fill();
-  ctx.fillStyle='#5C6B5E';
-  ctx.font='700 14px Arial';
-  ctx.fillText('CLIENTE', padding+36, y+66);
-  ctx.fillStyle='#1B2420';
-  ctx.font='700 20px Arial';
-  let cName=customerName;
-  if(ctx.measureText(cName).width> (W/2-100)) cName=cName.slice(0,26)+'...';
-  ctx.fillText(cName, padding+36, y+88);
-
-  ctx.fillStyle='#F7FBF7';
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(W/2+10, y+48, (W-padding*2)/2-30, 56, 12); else ctx.rect(W/2+10, y+48, (W-padding*2)/2-30, 56);
-  ctx.fill();
-  ctx.fillStyle='#5C6B5E';
-  ctx.font='700 11px Arial';
-  ctx.fillText('CIDADE / REGIAO', W/2+26, y+66);
-  ctx.fillStyle='#1B2420';
-  ctx.font='700 20px Arial';
-  let cCity=customerCity;
-  if(ctx.measureText(cCity).width> (W/2-100)) cCity=cCity.slice(0,22)+'...';
-  ctx.fillText(cCity, W/2+26, y+88);
-
-  y+=clientH+12;
-
-  ctx.fillStyle='#1E4630';
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(padding, y, W-padding*2, tableHeaderH, 14); else ctx.rect(padding, y, W-padding*2, tableHeaderH);
-  ctx.fill();
-  ctx.fillStyle='#FFFFFF';
+  ctx.fillStyle='#1E3A2F';
   ctx.font='800 16px Arial';
   ctx.textAlign='left';
-  ctx.fillText('PRODUTO', padding+92, y+30);
-  ctx.textAlign='center';
-  ctx.fillText('QTD', W-460, y+30);
-  ctx.fillText('UNIT.', W-320, y+30);
-  ctx.textAlign='right';
-  ctx.fillText('TOTAL', W-padding-28, y+30);
-  y+=tableHeaderH+12;
+  const labelW=ctx.measureText('Representante: ').width;
+  ctx.fillText('Cliente:', padding, y);
+  ctx.fillStyle='#000000';
+  ctx.font='400 16px Arial';
+  ctx.fillText(customerName, padding+labelW-10, y);
+  ctx.fillStyle='#1E3A2F';
+  ctx.font='800 16px Arial';
+  ctx.fillText('Cidade:', W/2+20, y);
+  ctx.fillStyle='#000000';
+  ctx.font='400 16px Arial';
+  ctx.fillText(customerCity, W/2+20+70, y);
+  y+=32;
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('pt-BR');
+  ctx.fillStyle='#1E3A2F';
+  ctx.font='800 16px Arial';
+  ctx.fillText('Data:', padding, y);
+  ctx.fillStyle='#000000';
+  ctx.font='400 16px Arial';
+  ctx.fillText(dateStr, padding+50, y);
+  ctx.fillStyle='#1E3A2F';
+  ctx.font='800 16px Arial';
+  ctx.fillText('Representante:', W/2+20, y);
+  ctx.fillStyle='#000000';
+  ctx.font='400 16px Arial';
+  ctx.fillText('Netto', W/2+20+135, y);
+  y+=50;
 
-  const images={};
-  let companyLogoImg=null;
-  const loadPromises=[
-    ...cart.map(c=>new Promise(res=>{
-      const prod=(typeof products!=='undefined'?products.find(p=>p.id===c.id):null)||c;
-      const imgUrl=prod.image||c.image||'';
-      if(!imgUrl){res();return}
-      const img=new Image();
-      img.crossOrigin='anonymous';
-      img.onload=()=>{images[c.id]=img;res();};
-      img.onerror=()=>{res();};
-      img.src=imgUrl;
-    })),
-    new Promise(res=>{
-      const logoUrl=(typeof empresaConfig!=='undefined'&&empresaConfig?.logo)?empresaConfig.logo:'';
-      if(!logoUrl){res();return}
-      const img=new Image();
-      img.crossOrigin='anonymous';
-      img.onload=()=>{companyLogoImg=img;res();};
-      img.onerror=()=>{res();};
-      img.src=logoUrl;
-    })
-  ];
-  await Promise.all(loadPromises);
-
-  if(companyLogoImg){
-    try{
-      ctx.save();
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(logoX+4, logoY+4, logoSize-8, logoSize-8, 14); else ctx.rect(logoX+4, logoY+4, logoSize-8, logoSize-8);
-      ctx.clip();
-      ctx.drawImage(companyLogoImg, logoX+4, logoY+4, logoSize-8, logoSize-8);
-      ctx.restore();
-    }catch(e){}
-  }
+  ctx.fillStyle='#1E4630';
+  ctx.beginPath();
+  ctx.roundRect(padding, y, W-padding*2, tableHeaderH, 4);
+  ctx.fill();
+  ctx.fillRect(padding, y+tableHeaderH-6, W-padding*2, 8);
+  ctx.fillStyle='#FFFFFF';
+  ctx.font='800 14px Arial Black';
+  ctx.textAlign='left';
+  ctx.fillText('QTD', padding+18, y+34);
+  ctx.fillText('PRODUTO', padding+130, y+34);
+  ctx.fillText('UNITÁRIO', W/2+60, y+34);
+  ctx.fillText('TOTAL', W-padding-140, y+34);
+  y+=tableHeaderH;
 
   cart.forEach((c,i)=>{
-    const isEven=i%2===0;
     const rowY=y;
-    if(isEven){
-      ctx.fillStyle='#FAFBF7';
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(padding, rowY, W-padding*2, rowH-10, 14); else ctx.rect(padding, rowY, W-padding*2, rowH-10);
-      ctx.fill();
-    }
-    const img=images[c.id];
-    const imgSize=96;
-    const imgX=padding+16;
-    const imgY=rowY+ (rowH-10-imgSize)/2;
-    if(img){
-      try{
-        ctx.save();
-        ctx.beginPath();
-        if(ctx.roundRect) ctx.roundRect(imgX, imgY, imgSize, imgSize, 14); else ctx.rect(imgX, imgY, imgSize, imgSize);
-        ctx.clip();
-        ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-        ctx.restore();
-      }catch(e){}
-      ctx.strokeStyle='#E8EEE0';
-      ctx.lineWidth=1;
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(imgX, imgY, imgSize, imgSize, 14); else ctx.rect(imgX, imgY, imgSize, imgSize);
-      ctx.stroke();
-    }else{
-      ctx.fillStyle='#E8EEE0';
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(imgX, imgY, imgSize, imgSize, 14); else ctx.rect(imgX, imgY, imgSize, imgSize);
-      ctx.fill();
-      ctx.fillStyle='#7A9A7E';
-      ctx.font='32px Arial';
-      ctx.textAlign='center';
-      ctx.fillText('📦', imgX+imgSize/2, imgY+52);
-    }
-    ctx.textAlign='left';
-    ctx.fillStyle='#1B2420';
-    ctx.font='700 19px Arial';
-    let name=c.name;
-    if(name.length>48) name=name.slice(0,45)+'...';
-    ctx.fillText(name, padding+100, rowY+38);
-    const prod=(typeof products!=='undefined'?products.find(p=>p.id===c.id):null);
-    if(prod&&prod.category){
-      ctx.fillStyle='#7A8A7D';
-      ctx.font='600 19px Arial';
-      ctx.fillText(prod.category.toUpperCase(), padding+100, rowY+58);
-    }
-    const qtyText=String(c.qty);
-    ctx.font='800 17px Arial';
-    const qw=ctx.measureText(qtyText).width+28;
-    const qx=W-460-qw/2;
-    const qy=rowY+22;
-    ctx.fillStyle='#1E4630';
-    ctx.beginPath();
-    if(ctx.roundRect) ctx.roundRect(qx, qy, qw, 28, 14); else ctx.rect(qx, qy, qw, 28);
-    ctx.fill();
+    ctx.strokeStyle='#E5E7EB';
+    ctx.lineWidth=1;
+    ctx.strokeRect(padding, rowY, W-padding*2, rowH);
     ctx.fillStyle='#FFFFFF';
-    ctx.textAlign='center';
-    ctx.fillText(qtyText, qx+qw/2, qy+19);
-    ctx.fillStyle='#5C6B5E';
-    ctx.font='600 17px Arial';
-    ctx.textAlign='center';
-    ctx.fillText('R$ '+Number(c.price||0).toFixed(2).replace('.',','), W-320, rowY+40);
-    ctx.fillStyle='#9C6B28';
-    ctx.font='800 20px Arial';
-    ctx.textAlign='right';
-    ctx.fillText('R$ '+(c.qty*Number(c.price||0)).toFixed(2).replace('.',','), W-padding-24, rowY+40);
+    ctx.fillRect(padding+1, rowY+1, W-padding*2-2, rowH-2);
+    ctx.textAlign='left';
+    ctx.fillStyle='#000000';
+    ctx.font='400 16px Arial';
+    ctx.fillText(String(c.qty), padding+18, rowY+38);
+    let name=c.name;
+    if(name.length>58) name=name.slice(0,55)+'...';
+    ctx.fillText(name, padding+130, rowY+38);
+    ctx.fillText('R$ '+Number(c.price||0).toFixed(2).replace('.', '.'), W/2+60, rowY+38);
+    ctx.fillText('R$ '+(c.qty*Number(c.price||0)).toFixed(2).replace('.', '.'), W-padding-140, rowY+38);
     y+=rowH;
   });
 
-  y+=8;
+  y+=24;
   const totalBruto=cart.reduce((s,c)=>s+(c.qty*Number(c.price||0)),0);
   const desconto=(typeof calculateDiscount==='function'?calculateDiscount(totalBruto):0);
   const total=Math.max(0,totalBruto-desconto);
-  ctx.fillStyle='#FFFFFF';
-  ctx.strokeStyle='#E1EEE2';
-  ctx.lineWidth=1.5;
-  ctx.shadowColor='rgba(30,70,48,0.08)';
-  ctx.shadowBlur=16;
-  ctx.shadowOffsetY=4;
-  ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(padding, y, W-padding*2, desconto>0? 140: 100, 20); else ctx.rect(padding, y, W-padding*2, desconto>0? 140: 100);
-  ctx.fill();
-  ctx.stroke();
-  ctx.shadowColor='transparent';
-  ctx.fillStyle='#9C6B28';
-  ctx.fillRect(padding+20, y, W-padding*2-40, 3);
-  let ty=y+30;
   ctx.textAlign='left';
-  ctx.fillStyle='#5C6B5E';
-  ctx.font='600 17px Arial';
-  ctx.fillText((cart.length)+' '+(cart.length===1?'item':'itens')+' - Subtotal', padding+28, ty);
+  ctx.fillStyle='#555555';
+  ctx.font='400 16px Arial';
+  ctx.fillText('Subtotal', W-300, y);
   ctx.textAlign='right';
-  ctx.fillStyle='#1B2420';
-  ctx.font='600 19px Arial';
-  ctx.fillText('R$ '+totalBruto.toFixed(2).replace('.',','), W-padding-28, ty);
-  if(desconto>0){
-    ty+=32;
-    ctx.textAlign='left';
-    ctx.fillStyle='#2F7A52';
-    ctx.font='700 17px Arial';
-    const cupomTxt=(typeof appliedCoupon!=='undefined'&&appliedCoupon)?'Cupom '+appliedCoupon.code:'Desconto aplicado';
-    ctx.fillText('🎟️ '+cupomTxt, padding+28, ty);
-    ctx.textAlign='right';
-    ctx.fillStyle='#2F7A52';
-    ctx.font='800 19px Arial';
-    ctx.fillText('- R$ '+desconto.toFixed(2).replace('.',','), W-padding-28, ty);
-    ty+=12;
-  }
-  ty+=36;
+  ctx.fillStyle='#000000';
+  ctx.font='800 16px Arial';
+  ctx.fillText('R$ '+totalBruto.toFixed(2).replace('.', ','), W-padding, y);
+  y+=32;
+  ctx.textAlign='left';
+  ctx.fillStyle='#555555';
+  ctx.font='400 16px Arial';
+  ctx.fillText('Frete', W-300, y);
+  ctx.textAlign='right';
+  ctx.fillStyle='#000000';
+  ctx.font='800 16px Arial';
+  ctx.fillText('R$ 0,00', W-padding, y);
+  y+=32;
+  ctx.textAlign='left';
+  ctx.fillStyle='#555555';
+  ctx.font='400 16px Arial';
+  ctx.fillText('Desconto', W-300, y);
+  ctx.textAlign='right';
+  ctx.fillStyle='#000000';
+  ctx.font='800 16px Arial';
+  if(desconto>0) ctx.fillText('- R$ '+desconto.toFixed(2).replace('.', ','), W-padding, y);
+  else ctx.fillText('R$ 0,00', W-padding, y);
+  y+=28;
+  const totalBoxW=340;
+  const totalBoxH=52;
+  const totalBoxX=W-padding-totalBoxW;
   ctx.fillStyle='#1E4630';
   ctx.beginPath();
-  if(ctx.roundRect) ctx.roundRect(padding+12, ty-24, W-padding*2-24, 48, 12); else ctx.rect(padding+12, ty-24, W-padding*2-24, 48);
+  ctx.roundRect(totalBoxX, y, totalBoxW, totalBoxH, 12);
   ctx.fill();
   ctx.fillStyle='#FFFFFF';
-  ctx.font='800 17px Arial';
+  ctx.font='800 13px Arial Black';
   ctx.textAlign='left';
-  ctx.fillText('TOTAL DO PEDIDO', padding+32, ty+6);
+  ctx.fillText('TOTAL DO PEDIDO', totalBoxX+18, y+32);
   ctx.textAlign='right';
-  ctx.font='800 28px Arial';
-  ctx.fillText('R$ '+total.toFixed(2).replace('.',','), W-padding-32, ty+8);
-
-  const footerY=H-90;
-  ctx.textAlign='center';
-  ctx.fillStyle='#1E4630';
-  ctx.font='800 21px Arial';
-  ctx.fillText('Obrigado pela preferencia! 💚', W/2, footerY);
-  ctx.fillStyle='#6B7D6E';
-  ctx.font='600 16px Arial';
-  const nomeEmpresaFooter=(typeof empresaConfig!=='undefined'&&empresaConfig?.nome)?empresaConfig.nome:'OUXE';
-  ctx.fillText(nomeEmpresaFooter+' - Pedido gerado em '+dateStr+' as '+timeStr, W/2, footerY+24);
-  ctx.fillStyle='#9CA89E';
-  ctx.font='14px Arial';
-  let footerMsg='Cliente: '+customerName+' - Cidade: '+customerCity+' - Valido enquanto durar o estoque';
-  if(footerMsg.length>90) footerMsg=footerMsg.slice(0,87)+'...';
-  ctx.fillText(footerMsg, W/2, footerY+44);
-
-  let msg='*PEDIDO OUXE - FORMULARIO ELEGANTE*%0A';
-  msg+='Cliente: '+encodeURIComponent(customerName)+'%0ACidade: '+encodeURIComponent(customerCity)+'%0AData: '+encodeURIComponent(dateStr+' '+timeStr)+'%0A%0A';
-  cart.forEach(c=>{msg+=c.qty+'x '+encodeURIComponent(c.name)+' - R$ '+(c.qty*Number(c.price||0)).toFixed(2).replace('.',',')+'%0A';});
-  msg+='%0A';
-  if(desconto>0){msg+='Subtotal: R$ '+totalBruto.toFixed(2).replace('.',',')+'%0A'; if(typeof appliedCoupon!=='undefined'&&appliedCoupon) msg+='Cupom '+appliedCoupon.code+': - R$ '+desconto.toFixed(2).replace('.',',')+'%0A%0A';}
-  msg+='*TOTAL: R$ '+total.toFixed(2).replace('.',',')+'*%0A%0A_Pedido com formulario em imagem elegante_';
-  const waUrl='https://wa.me/'+WHATSAPP_NUMBER+'?text='+msg;
+  ctx.font='900 18px Arial Black';
+  ctx.fillText('R$ '+total.toFixed(2).replace('.', ','), totalBoxX+totalBoxW-18, y+32);
 
   canvas.toBlob(async (blob)=>{
-    if(!blob){window.open(waUrl,'_blank');return}
-    const file=new File([blob],'pedido-ouxe-elegante.png',{type:'image/png'});
+    if(!blob){showToast('Erro ao gerar');return}
+    const file=new File([blob],'pedido-ouxe.png',{type:'image/png'});
     if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
       try{
-        await navigator.share({files:[file], title:'Pedido OUXE Elegante', text:'Pedido '+customerName+' - Total R$ '+total.toFixed(2).replace('.',',')});
-        setTimeout(()=>window.open(waUrl,'_blank'),500);
-        if(typeof showToast==='function') showToast('✨ Pedido elegante enviado!');
+        await navigator.share({files:[file], title:'Pedido OUXE Distribuidor', text:''});
+        showToast('✅ Pedido enviado!');
         cart=[]; if(typeof appliedCoupon!=='undefined') appliedCoupon=null; try{saveCart();updateCartBadge();closeCart();}catch(e){} return;
       }catch(err){ if(err&&err.name==='AbortError') return; }
     }
     const link=document.createElement('a');
-    link.download='pedido-ouxe-elegante-'+Date.now()+'.png';
-    link.href=canvas.toDataURL('image/png');
+    link.download='pedido-ouxe-'+Date.now()+'.png';
+    link.href=canvas.toDataURL('image/png', 1.0);
     link.click();
-    window.open(waUrl,'_blank');
-    if(typeof showToast==='function') showToast('✨ Formulario em imagem baixado + WhatsApp aberto!');
+    try{
+      const waNum=(empresaConfig?.whats||'').replace(/\D/g,'');
+      if(waNum){
+        window.open('https://wa.me/'+waNum,'_blank');
+        showToast('📎 Imagem baixada! Anexe no WhatsApp');
+      } else {
+        showToast('✅ Imagem do pedido baixada!');
+      }
+    }catch(e){
+      showToast('✅ Imagem do pedido baixada!');
+    }
     cart=[]; if(typeof appliedCoupon!=='undefined') appliedCoupon=null; try{saveCart();updateCartBadge();closeCart();}catch(e){}
-  },'image/png', 0.96);
+  },'image/png', 1.0);
 }
 
 
