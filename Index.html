@@ -2112,32 +2112,195 @@ ${source.outerHTML}
 }
 
 
+
+
+
+async function generateCatalogImageBlob(options={}){
+  const list=getCatalogProducts(true);
+  if(list.length===0){ showToast('Nenhum produto'); return null; }
+  const W=options.width||1080;
+  const headerH=170;
+  const rowH=96;
+  const footerH=70;
+  const H=headerH + list.length*rowH + footerH;
+  const canvas=document.getElementById('catalogCanvas');
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  
+  // Fundo
+  ctx.fillStyle='#FFFFFF';
+  ctx.fillRect(0,0,W,H);
+  
+  // Header gradiente chic
+  const grad=ctx.createLinearGradient(0,0,W,0);
+  grad.addColorStop(0,'#1E4630');
+  grad.addColorStop(1,'#2F7A52');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,W,headerH-20);
+  // curva header
+  ctx.beginPath();
+  ctx.moveTo(0,headerH-20);
+  ctx.quadraticCurveTo(W/2, headerH+20, W, headerH-20);
+  ctx.lineTo(W,0); ctx.lineTo(0,0); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+
+  // Logo
+  ctx.fillStyle='#FFFFFF';
+  ctx.beginPath(); ctx.roundRect(40,28,80,80,20); ctx.fill();
+  ctx.fillStyle='#1E4630';
+  ctx.font='900 32px Fraunces, serif';
+  ctx.textAlign='center';
+  ctx.fillText((empresaConfig?.logoTexto||'OU').slice(0,2),80,78);
+  
+  // Nome empresa
+  ctx.fillStyle='#FFFFFF';
+  ctx.font='800 36px Plus Jakarta Sans, Arial';
+  ctx.textAlign='left';
+  ctx.fillText(empresaConfig?.nome||'OUXE Distribuidor',150,62);
+  ctx.font='600 18px Plus Jakarta Sans, Arial';
+  ctx.globalAlpha=0.92;
+  ctx.fillText((empresaConfig?.sub||'Produtos naturais e cosméticos')+' • '+new Date().toLocaleDateString('pt-BR'),150,92);
+  ctx.globalAlpha=1;
+  // badge contagem
+  ctx.fillStyle='rgba(255,255,255,0.18)';
+  ctx.beginPath(); ctx.roundRect(W-260,32,220,36,18); ctx.fill();
+  ctx.fillStyle='#FFFFFF';
+  ctx.font='700 15px Arial';
+  ctx.textAlign='center';
+  ctx.fillText(list.length+' PRODUTOS ÚNICOS', W-150,55);
+
+  // Carregar imagens
+  const images={};
+  const loadPromises=list.map(p=>new Promise(res=>{
+    if(!p.image){res();return}
+    const img=new Image(); img.crossOrigin='anonymous';
+    img.onload=()=>{images[p.id]=img; res();};
+    img.onerror=()=>{res();};
+    img.src=p.image;
+  }));
+  await Promise.all(loadPromises);
+
+  // Lista
+  let y=headerH;
+  list.forEach((p,i)=>{
+    // zebra
+    if(i%2===0){ ctx.fillStyle='#F8FAF6'; ctx.fillRect(0,y-10,W, rowH); }
+    else { ctx.fillStyle='#FFFFFF'; ctx.fillRect(0,y-10,W,rowH); }
+
+    // linha separadora fina
+    ctx.fillStyle='#EEF2E8'; ctx.fillRect(120,y+rowH-12,W-140,1);
+
+    // imagem produto
+    const imgBoxX=40, imgBoxY=y, imgBoxW=68, imgBoxH=68;
+    ctx.fillStyle='#F2F5EC';
+    ctx.beginPath(); ctx.roundRect(imgBoxX, imgBoxY, imgBoxW, imgBoxH,14); ctx.fill();
+    ctx.strokeStyle='#E5EADF'; ctx.lineWidth=1; ctx.stroke();
+    const img=images[p.id];
+    if(img){
+      try{
+        // contain
+        const ratio=Math.min(imgBoxW/img.width, imgBoxH/img.height)*0.85;
+        const nw=img.width*ratio, nh=img.height*ratio;
+        ctx.drawImage(img, imgBoxX+(imgBoxW-nw)/2, imgBoxY+(imgBoxH-nh)/2, nw, nh);
+      }catch(e){}
+    } else {
+      ctx.font='28px Arial'; ctx.textAlign='center'; ctx.fillStyle='#B9C4B2';
+      ctx.fillText('📦', imgBoxX+imgBoxW/2, imgBoxY+44);
+    }
+
+    // nome
+    ctx.fillStyle='#1B2420';
+    ctx.font='700 20px Plus Jakarta Sans, Arial';
+    ctx.textAlign='left';
+    let name=p.name||'';
+    if(name.length>56) name=name.slice(0,53)+'...';
+    ctx.fillText(name, 130, y+26);
+
+    // categoria + disponivel
+    ctx.fillStyle='#E8F0E2';
+    ctx.beginPath(); ctx.roundRect(130, y+36, ctx.measureText(p.category||'').width+22, 22, 11); ctx.fill();
+    ctx.fillStyle='#4A5C4B'; ctx.font='600 12px Arial';
+    ctx.fillText((p.category||'Outros').toUpperCase(), 141, y+51);
+
+    // preço chic
+    const priceText='R$ '+Number(p.price).toFixed(2).replace('.',',');
+    ctx.fillStyle='#9C6B28';
+    ctx.font='900 24px Fraunces, serif';
+    ctx.textAlign='right';
+    ctx.fillText(priceText, W-40, y+38);
+
+    // selo
+    if(!p.disponivel){
+      ctx.fillStyle='#FFE9E9'; ctx.beginPath(); ctx.roundRect(W-200, y+52, 80,20,10); ctx.fill();
+      ctx.fillStyle='#C64B4B'; ctx.font='700 11px Arial'; ctx.textAlign='center';
+      ctx.fillText('INDISPONÍVEL', W-160, y+65);
+    }
+
+    y+=rowH;
+  });
+
+  // Footer
+  ctx.fillStyle='#F0F3E9';
+  ctx.fillRect(0,H-footerH,W,footerH);
+  ctx.fillStyle='#7A8A7C';
+  ctx.font='600 13px Arial';
+  ctx.textAlign='center';
+  ctx.fillText((empresaConfig?.nome||'OUXE')+' • Tabela gerada em '+new Date().toLocaleString('pt-BR')+' • '+list.length+' produtos sem repetição', W/2, H-28);
+
+  return new Promise(resolve=>{
+    canvas.toBlob(blob=>resolve(blob),'image/png',1.0);
+  });
+}
+
 async function generateCatalogImage(){
-  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
-  showToast('🖼️ Gerando imagem...');
-  const canvas=document.getElementById('catalogCanvas');const type=document.getElementById('catalogType')?.value||'tabela';
-  const W=800;const headerH=120;const rowH=type==='grade'?200:70;const cols=type==='grade'?3:1;const rows=Math.ceil(list.length/cols);const H=headerH+rows*rowH+60;
-  canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-  const grad=ctx.createLinearGradient(0,0,W,0);grad.addColorStop(0,'#1E4630');grad.addColorStop(1,'#2F7A52');ctx.fillStyle=grad;ctx.fillRect(0,0,W,90);
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(20,16,56,56,12);ctx.fill();ctx.fillStyle='#1E4630';ctx.font='bold 24px Arial';ctx.textAlign='center';ctx.fillText(empresaConfig?.logoTexto||'OU',48,52);
-  ctx.fillStyle='#fff';ctx.font='bold 22px Arial';ctx.textAlign='left';ctx.fillText(empresaConfig?.nome||'OUXE Distribuidor',90,44);ctx.font='13px Arial';ctx.fillText('Tabela de Preços - '+new Date().toLocaleDateString('pt-BR'),90,62);
-  const images={};const loadPromises=list.map(p=>new Promise(res=>{if(!p.image){res();return}const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{images[p.id]=img;res();};img.onerror=()=>{res();};img.src=p.image;}));await Promise.all(loadPromises);
-  let y=headerH;if(type!=='grade'){ctx.fillStyle='#f5f5f5';ctx.fillRect(20,y-24,W-40,28);ctx.fillStyle='#333';ctx.textAlign='left';ctx.font='bold 12px Arial';ctx.fillText('Produto',30,y-6);ctx.textAlign='right';ctx.fillText('Preço',W-30,y-6);y+=10;}
-  if(type==='grade'){
-    let col=0,row=0;list.forEach((p)=>{const x=20+col*(W-40)/cols+5;const w=(W-50)/cols-10;const yy=y+row*rowH;ctx.fillStyle='#fff';ctx.strokeStyle='#e0e0e0';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(x,yy,w,rowH-10,10);ctx.fill();ctx.stroke();const img=images[p.id];if(img){try{ctx.drawImage(img,x+8,yy+8,w-16,70);}catch(e){}}else{ctx.fillStyle='#fafafa';ctx.fillRect(x+8,yy+8,w-16,70);ctx.fillStyle='#ccc';ctx.font='24px Arial';ctx.textAlign='center';ctx.fillText('📦',x+w/2,yy+50);}ctx.fillStyle='#222';ctx.font='bold 10px Arial';ctx.textAlign='left';let name=p.name;if(name.length>38)name=name.slice(0,35)+'...';const words=name.split(' ');let line='',lines=[],maxW=w-16;words.forEach(wd=>{const test=line?line+' '+wd:wd;if(ctx.measureText(test).width>maxW){lines.push(line);line=wd;}else line=test;});if(line)lines.push(line);lines.slice(0,2).forEach((ln,i)=>{ctx.fillText(ln,x+8,yy+90+i*12);});ctx.fillStyle='#9C6B28';ctx.font='bold 13px Arial';ctx.fillText('R$ '+Number(p.price).toFixed(2).replace('.',','),x+8,yy+118);col++;if(col>=cols){col=0;row++;}});
-  } else {
-    list.forEach((p,i)=>{if(i%2===0){ctx.fillStyle='#fafafa';ctx.fillRect(20,y-18,W-40,rowH-6);}const img=images[p.id];if(img){try{ctx.drawImage(img,30,y-14,40,40);}catch(e){}}else{ctx.fillStyle='#eee';ctx.fillRect(30,y-14,40,40);}ctx.fillStyle='#222';ctx.font='11px Arial';ctx.textAlign='left';let name=p.name;if(name.length>52)name=name.slice(0,49)+'...';ctx.fillText(name,80,y+6);ctx.textAlign='right';ctx.fillStyle='#9C6B28';ctx.font='bold 13px Arial';ctx.fillText('R$ '+Number(p.price).toFixed(2).replace('.',','),W-30,y+6);y+=rowH;});
+  showToast('🖼️ Gerando catálogo chique...');
+  const blob=await generateCatalogImageBlob({width:1080});
+  if(!blob){ showToast('Erro ao gerar'); return; }
+  downloadBlobUniversal(blob, 'catalogo-ouxe-chic-'+Date.now()+'.png');
+  showToast('✅ Catálogo chique pronto!');
+}
+
+async function shareCatalog(){
+  const list=getCatalogProducts(true);
+  if(list.length===0){showToast('Nenhum produto');return}
+  showToast('✨ Criando catálogo com fotos para WhatsApp...');
+
+  try{
+    const blob=await generateCatalogImageBlob({width:1080});
+    if(!blob){ showToast('Erro ao gerar imagem'); return; }
+
+    const fileName='OUXE-'+list.length+'-produtos-'+new Date().toISOString().slice(0,10)+'.png';
+    const file=new File([blob], fileName, {type:'image/png'});
+
+    // Tenta compartilhamento nativo (abre direto WhatsApp)
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title: (empresaConfig?.nome||'OUXE')+' - Tabela '+list.length+' produtos',
+        text: `*${empresaConfig?.nome||'OUXE'} - Tabela Chic*\n${list.length} produtos únicos, com fotos e preços\nGerado em ${new Date().toLocaleDateString('pt-BR')}`
+      });
+      showToast('✅ Compartilhado!');
+      return;
+    }
+
+    // Fallback: baixa e abre WhatsApp
+    downloadBlobUniversal(blob, fileName);
+    setTimeout(()=>{
+      const text=`*${empresaConfig?.nome||'OUXE Distribuidor'} - TABELA CHIC*%0A${list.length} produtos com fotos e preços%0A%0AGerado em ${new Date().toLocaleDateString('pt-BR')}%0A%0A📸 Acabei de baixar o catálogo com imagens!`;
+      window.open('https://wa.me/?text='+text,'_blank');
+    },800);
+    showToast('📸 Imagem baixada! Enviando para WhatsApp...');
+  }catch(e){
+    console.error(e);
+    showToast('Erro, gerando imagem simples...');
+    // fallback texto antigo
+    let text=`*${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela de Preços*%0A${list.length} produtos%0A%0A`;
+    list.slice(0,30).forEach(p=>{text+=`• ${encodeURIComponent(p.name)} - R$ ${Number(p.price).toFixed(2).replace('.',',')}%0A`;});
+    window.open(`https://wa.me/?text=${text}`,'_blank');
   }
-  ctx.fillStyle='#888';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText((empresaConfig?.nome||'OUXE')+' - '+new Date().toLocaleString('pt-BR'),W/2,H-12);
-  canvas.toBlob(async (blob)=>{if(!blob){showToast('Erro ao gerar imagem');return} downloadBlobUniversal(blob, 'catalogo-ouxe-'+Date.now()+'.png'); showToast('✅ Pronto!'); },'image/png');
 }
-function shareCatalog(){
-  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
-  let text=`*${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela de Preços*%0A${list.length} produtos%0A%0A`;
-  list.slice(0,30).forEach(p=>{text+=`• ${encodeURIComponent(p.name)} - R$ ${Number(p.price).toFixed(2).replace('.',',')}%0A`;});
-  if(list.length>30) text+=`%0A... e mais ${list.length-30} produtos.%0A`;
-  window.open(`https://wa.me/?text=${text}`,'_blank');showToast('📱 Abrindo WhatsApp...');
-}
+
+
 function exportCatalogCSV(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   let csv='Nome,Preço,Categoria,Disponível\n';list.forEach(p=>{csv+=`"${p.name.replace(/"/g,'""')}",${p.price.toString().replace('.',',')},"${p.category}",${p.disponivel?'Sim':'Não'}\n`;});
