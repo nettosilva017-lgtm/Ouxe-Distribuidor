@@ -384,7 +384,7 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
 </header>
 
 <div class="search-bar">
-  <input type="text" id="searchInput" name="q_search_ouxe_unique" autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off" data-lpignore="true" data-form-type="other" value="" placeholder="🔎 Pesquisar produto..." aria-label="Pesquisar produto" inputmode="search">
+  <input type="search" id="searchInput" autocomplete="off" autocorrect="off" spellcheck="false" value="" placeholder="🔎 Pesquisar produto..." autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Pesquisar produto">
   <button class="search-clear" id="searchClear" style="display:none" onclick="clearSearch()" aria-label="Limpar busca">×</button>
 </div>
 
@@ -534,9 +534,10 @@ h1,h2,h3,.brand-face{font-family:'Fraunces',Georgia,serif}
       </div>
       <div class="catalog-actions">
         <button class="btn-primary" onclick="renderCatalogPreview()">🔄 Atualizar</button>
-        <button class="btn-primary" style="background:#fff;color:var(--forest);border:1.5px solid var(--line)" onclick="printCatalog()">🖨️ Imprimir / PDF</button>
+        <button class="btn-primary" style="background:#1E4630;color:#fff;border:none" onclick="printCatalog()">🖨️ Imprimir / PDF (com botão)</button>
+        <button class="btn-primary" style="background:#2F7A52;color:#fff;border:none" onclick="printCatalogDirect()">🖨️ Impressão Direta Windows</button>
         <button class="btn-primary" style="background:var(--gold);border:none" onclick="generateCatalogImage()">🖼️ Imagem Longa</button>
-        <button class="btn-primary" style="background:var(--whats)" onclick="shareCatalog()">📱 WhatsApp</button>
+        <button class="btn-primary" style="background:var(--whats)" onclick="shareCatalog()">📱 WhatsApp Texto</button>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
         <button class="btn-primary" style="width:auto;padding:8px 12px;font-size:12px;background:#fff;color:var(--forest);border:1.5px solid var(--line)" onclick="exportCatalogCSV()">📊 CSV</button>
@@ -741,15 +742,7 @@ function saveCart(){
 function onSearchInput(v){
   clearTimeout(searchDebounce);
   searchDebounce=setTimeout(()=>{
-    let raw=(v||'').trim();
-    // Se o navegador autofill colocou OUXE ou nome da empresa, limpa
-    const norm=normalizeText(raw);
-    if(norm==='ouxe' || norm==='ou' || norm===normalizeText(empresaConfig?.nome||'')){
-      raw=''; 
-      const si=document.getElementById('searchInput');
-      if(si) si.value='';
-    }
-    searchTerm=raw;
+    searchTerm=(v||'').trim();
     const clearBtn=document.getElementById('searchClear');
     if(clearBtn) clearBtn.style.display=searchTerm?'flex':'none';
     renderProducts();
@@ -798,19 +791,10 @@ function renderCategories(){
 function getFiltered(){
   let list = currentCategory==='Todos'?products.slice():products.filter(p=>p.category===currentCategory);
   if(searchTerm){
-    let q=normalizeText(searchTerm);
-    // CORREÇÃO: ignora busca por "ouxe" ou nome da empresa que aparece por autofill
-    const qClean=q.trim();
-    const empresaNorm=normalizeText(empresaConfig?.nome||'ouxe distribuidor');
-    const isEmpresa = qClean==='ouxe' || qClean==='ou' || qClean===empresaNorm || empresaNorm.includes(qClean) && qClean.length<=4;
-    if(isEmpresa){
-      searchTerm='';
-      const si=document.getElementById('searchInput');
-      if(si && normalizeText(si.value)==qClean) si.value='';
-    } else {
-      list=list.filter(p=>normalizeText(p.name).includes(q) || normalizeText(p.category).includes(q));
-    }
+    const q=normalizeText(searchTerm);
+    list=list.filter(p=>normalizeText(p.name).includes(q));
   }
+  // disponiveis primeiro
   list.sort((a,b)=>{
     if(a.disponivel!==b.disponivel) return a.disponivel? -1:1;
     return a.name.localeCompare(b.name,'pt-BR');
@@ -2067,67 +2051,136 @@ function renderCatalogPreview(forceAll=false){
 function printCatalog(){
   const list=getCatalogProducts(true);
   if(list.length===0){showToast('Nenhum produto');return}
-  // Garante preview atualizado com TODOS os itens, sem filtro
   renderCatalogPreview(true);
 
-  setTimeout(()=>{
-    const source=document.getElementById('catalogPrintArea');
-    if(!source){showToast('Erro ao preparar relatório');return}
+  // Gera HTML limpo sem depender do preview com max-height
+  const empresa=escapeHtml(empresaConfig?.nome||'OUXE Distribuidor');
+  const sub=escapeHtml(empresaConfig?.sub||'Produtos naturais e cosméticos');
+  const data=new Date().toLocaleString('pt-BR');
+  const logo=empresaConfig?.logo ? `<img src="${escapeAttr(empresaConfig.logo)}" style="width:100%;height:100%;object-fit:cover;border-radius:12px">` : escapeHtml((empresaConfig?.logoTexto||'OU').slice(0,2));
 
-    const win=window.open('','_blank','width=900,height=700');
-    if(!win){showToast('Permita pop-ups para imprimir o relatório');return}
+  // Monta linhas da tabela com TODOS os produtos
+  const rows=list.map((p,i)=>{
+    const img = p.image ? `<img src="${escapeAttr(p.image)}" style="width:44px;height:44px;object-fit:contain;border-radius:8px;border:1px solid #eee;background:#fff">` : '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#F2F5EC;border-radius:8px;font-size:20px">📦</div>';
+    return `<tr>
+      <td style="padding:8px 6px;text-align:center">${img}</td>
+      <td style="padding:8px;font-weight:700;font-size:12px;text-transform:uppercase">${escapeHtml(p.name)}</td>
+      <td style="padding:8px;font-size:11px"><span style="background:#F0F3E9;padding:3px 8px;border-radius:999px">${escapeHtml(p.category||'Outros')}</span></td>
+      <td style="padding:8px;text-align:right;font-weight:900;color:#9C6B28;font-family:Fraunces,serif;font-size:14px">${formatPrice(p.price)}</td>
+    </tr>`;
+  }).join('');
 
-    const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+  const win=window.open('','_blank','width=1024,height=800');
+  if(!win){showToast('Permita pop-ups');return}
 
-    win.document.open();
-    win.document.write(`<!DOCTYPE html>
+  win.document.open();
+  win.document.write(`<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>${escapeHtml(empresaConfig?.nome||'OUXE')} - Tabela de Preços</title>
+<title>${empresa} - Tabela ${list.length} produtos</title>
 <style>
-${styles}
-/* Correção relatório - remove limite de altura que causava repetição */
-html,body{margin:0;padding:0;background:#fff}
-body{font-family:Arial,sans-serif}
-#catalogPrintArea{display:block!important;visibility:visible!important;position:static!important;width:100%!important;padding:20px!important;box-sizing:border-box;max-height:none!important;overflow:visible!important}
-#catalogPrintArea *{visibility:visible!important}
-.catalog-preview{max-height:none!important;overflow:visible!important;height:auto!important}
-.catalog-table{width:100%;border-collapse:collapse}
-@media print{
- @page{size:A4;margin:10mm}
- html,body{margin:0!important;padding:0!important}
- #catalogPrintArea{width:100%!important;padding:0!important;max-height:none!important;overflow:visible!important}
- .catalog-preview{max-height:none!important;overflow:visible!important;display:block!important}
- .catalog-table{width:100%;border-collapse:collapse}
- .catalog-table tr{break-inside:avoid;page-break-inside:avoid}
- .catalog-table thead{display:table-header-group}
- .catalog-card{break-inside:avoid;page-break-inside:avoid}
-}
+  *{box-sizing:border-box}
+  body{font-family:Arial, sans-serif;margin:0;padding:0;background:#fff;color:#1B2420}
+  .no-print{display:block}
+  .print-header{background:linear-gradient(135deg,#1E4630,#2F7A52);color:#fff;padding:18px 20px;display:flex;align-items:center;gap:14px}
+  .logo-box{width:60px;height:60px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#1E4630;font-weight:900;font-size:22px;overflow:hidden;flex-shrink:0}
+  .header-info{flex:1}
+  .header-info h1{margin:0;font-size:20px}
+  .header-info p{margin:4px 0 0;font-size:13px;opacity:0.9}
+  .header-meta{text-align:right;font-size:12px;opacity:0.9}
+  .toolbar{padding:12px 20px;background:#F7FBF7;border-bottom:1px solid #DEE4D6;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .toolbar button{padding:12px 18px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:14px}
+  .btn-print{background:#1E4630;color:#fff}
+  .btn-close{background:#fff;border:1.5px solid #DEE4D6!important;color:#1E4630}
+  .content{padding:0}
+  table{width:100%;border-collapse:collapse}
+  th{background:#1E4630;color:#fff;padding:12px 8px;text-align:left;font-size:12px;position:sticky;top:0}
+  td{border-bottom:1px solid #EEF2E8}
+  tr:nth-child(even) td{background:#F8FAF6}
+  .footer{text-align:center;padding:16px;font-size:11px;color:#888;border-top:1px solid #eee;margin-top:10px}
+  @media print{
+    @page{size:A4;margin:12mm 10mm}
+    .no-print{display:none!important}
+    body{padding:0}
+    th{position:static}
+    tr{break-inside:avoid;page-break-inside:avoid}
+    table{page-break-inside:auto}
+  }
 </style>
 </head>
 <body>
-${source.outerHTML}
-<div style="text-align:center;font-size:10px;color:#888;margin-top:20px;padding:10px">Total: ${list.length} produtos únicos - Gerado em ${new Date().toLocaleString('pt-BR')}</div>
+  <div class="print-header">
+    <div class="logo-box">${logo}</div>
+    <div class="header-info">
+      <h1>${empresa} - Tabela de Preços</h1>
+      <p>${sub} • ${data}</p>
+    </div>
+    <div class="header-meta">${list.length} produtos únicos<br>sem repetição</div>
+  </div>
+  <div class="toolbar no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR AGORA (Windows)</button>
+    <button class="btn-close" onclick="window.close()">✖ Fechar</button>
+    <span style="font-size:12px;color:#666;margin-left:8px">Dica Windows: Marque "Gráficos de segundo plano" para sair com cores</span>
+  </div>
+  <div class="content">
+    <table>
+      <thead><tr><th style="width:60px">Foto</th><th>Produto</th><th style="width:140px">Categoria</th><th style="width:120px;text-align:right">Preço</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="footer">${empresa} • ${list.length} produtos únicos sem repetição • Gerado em ${data} • ${location.origin}</div>
+  </div>
+  <script>
+    // Auto foca e espera imagens
+    window.onload=()=>{
+      const imgs=[...document.images];
+      Promise.all(imgs.map(img=>new Promise(r=>{ if(img.complete) r(); else {img.onload=r; img.onerror=r}}))).then(()=>{
+        console.log('imagens carregadas, pronto para imprimir ${list.length} produtos');
+      });
+    };
+  <\/script>
 </body>
 </html>`);
-    win.document.close();
-
-    const imgs=[...win.document.images];
-    Promise.all(imgs.map(img=>new Promise(resolve=>{
-      if(img.complete)return resolve();
-      img.onload=resolve; img.onerror=resolve;
-    }))).then(()=>{
-      setTimeout(()=>{
-        win.focus();
-        win.print();
-        // Não fecha automático para usuário conferir
-        // win.onafterprint=()=>win.close();
-      },350);
-    });
-  },200);
+  win.document.close();
+  win.focus();
+  showToast('✅ Relatório com '+list.length+' produtos aberto - clique em IMPRIMIR AGORA');
 }
 
+// Impressão direta na mesma página - funciona melhor no Windows
+function printCatalogDirect(){
+  const list=getCatalogProducts(true);
+  if(list.length===0){showToast('Nenhum produto');return}
+  renderCatalogPreview(true);
+  // Cria estilo temporário para impressão direta
+  let style=document.getElementById('directPrintStyle');
+  if(style) style.remove();
+  style=document.createElement('style');
+  style.id='directPrintStyle';
+  style.textContent=`
+    @media print{
+      body *{visibility:hidden !important}
+      #catalogPrintArea, #catalogPrintArea *{visibility:visible !important}
+      #catalogPrintArea{position:absolute !important;left:0 !important;top:0 !important;width:100% !important;max-height:none !important;overflow:visible !important;padding:10px !important}
+      #catalogPrintArea .catalog-preview{max-height:none !important;overflow:visible !important;height:auto !important;display:block !important}
+      .catalog-table{width:100% !important}
+      .catalog-table tr{break-inside:avoid;page-break-inside:avoid}
+      .catalog-table thead{display:table-header-group}
+      @page{size:A4;margin:10mm}
+    }
+  `;
+  document.head.appendChild(style);
+  // Força render completo antes de imprimir
+  const area=document.getElementById('catalogPreviewArea');
+  if(area){ area.style.maxHeight='none'; area.style.overflow='visible'; }
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{
+      if(style) style.remove();
+      if(area){ area.style.maxHeight=''; area.style.overflow=''; }
+      renderCatalogPreview(true);
+    },500);
+  },300);
+}
 
 async function generateCatalogImage(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
@@ -2149,29 +2202,12 @@ async function generateCatalogImage(){
   canvas.toBlob(async (blob)=>{if(!blob){showToast('Erro ao gerar imagem');return} downloadBlobUniversal(blob, 'catalogo-ouxe-'+Date.now()+'.png'); showToast('✅ Pronto!'); },'image/png');
 }
 function shareCatalog(){
-  const list=getCatalogProducts(true);
-  if(list.length===0){showToast('Nenhum produto');return}
-  const empresa=empresaConfig?.nome||'OUXE Distribuidor';
-  const data=new Date().toLocaleDateString('pt-BR');
-  let text=`*${empresa} - TABELA CHIC*%0A`;
-  text+=`📅 ${data} • ${list.length} produtos únicos sem repetição%0A`;
-  text+=`━━━━━━━━━━━━━━━━━━%0A%0A`;
-  const porCat={};
-  list.forEach(p=>{ const c=p.category||'Outros'; if(!porCat[c]) porCat[c]=[]; porCat[c].push(p); });
-  Object.keys(porCat).sort((a,b)=>a.localeCompare(b,'pt-BR')).forEach(cat=>{
-    text+=`*${cat.toUpperCase()}*%0A`;
-    porCat[cat].forEach(p=>{
-      const preco='R$ '+Number(p.price).toFixed(2).replace('.',',');
-      text+=`• ${encodeURIComponent(p.name)} - *${preco}*%0A`;
-    });
-    text+=`%0A`;
-  });
-  text+=`━━━━━━━━━━━━━━━━━━%0A✅ Todos sem repetição`;
-  window.open(`https://wa.me/?text=${text}`,'_blank');
-  showToast('📱 WhatsApp texto chic com todos os produtos!');
+  const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
+  let text=`*${empresaConfig?.nome||'OUXE Distribuidor'} - Tabela de Preços*%0A${list.length} produtos%0A%0A`;
+  list.slice(0,30).forEach(p=>{text+=`• ${encodeURIComponent(p.name)} - R$ ${Number(p.price).toFixed(2).replace('.',',')}%0A`;});
+  if(list.length>30) text+=`%0A... e mais ${list.length-30} produtos.%0A`;
+  window.open(`https://wa.me/?text=${text}`,'_blank');showToast('📱 Abrindo WhatsApp...');
 }
-function shareCatalogImage(){ generateCatalogImage(); }
-
 function exportCatalogCSV(){
   const list=getCatalogProducts(true);if(list.length===0){showToast('Nenhum produto');return}
   let csv='Nome,Preço,Categoria,Disponível\n';list.forEach(p=>{csv+=`"${p.name.replace(/"/g,'""')}",${p.price.toString().replace('.',',')},"${p.category}",${p.disponivel?'Sim':'Não'}\n`;});
@@ -2191,39 +2227,11 @@ function copyCatalogText(){
     try{localStorage.removeItem('ouxe-products');}catch(e){}
     try{localStorage.removeItem(LS_PRODUCTS);}catch(e){}
     window._hasUnsavedChanges=false;
-    const si=document.getElementById('searchInput');
-    if(si){
-      si.value=''; searchTerm=''; 
-      si.setAttribute('autocomplete','off');
-      si.setAttribute('name','q_search_ouxe_unique');
-      si.setAttribute('data-lpignore','true');
-      // Força limpeza de autofill
-      try{ si.setAttribute('readonly',''); setTimeout(()=>si.removeAttribute('readonly'),100); }catch(e){}
-    }
-    setTimeout(()=>{
-      const s=document.getElementById('searchInput');
-      if(s){
-        const v=(s.value||'').trim().toLowerCase();
-        if(v==='ouxe' || v==='ou' || v.includes('ouxe')) s.value='';
-      }
-      searchTerm=''; renderProducts();
-    },300);
-    setTimeout(()=>{
-      const s=document.getElementById('searchInput');
-      if(s){ s.value=''; searchTerm=''; renderProducts(); }
-    },900);
-    window.addEventListener('pageshow',()=>{
-      const s=document.getElementById('searchInput');
-      if(s){s.value='';} searchTerm=''; renderProducts();
-    });
-    // Limpa se focar e tiver OUXE
-    document.getElementById('searchInput')?.addEventListener('focus', function(){
-      const v=(this.value||'').trim().toLowerCase();
-      if(v==='ouxe' || v==='ou' || v.includes('ouxe distribuidor')){
-        this.value=''; searchTerm=''; renderProducts();
-      }
-    });
-
+    const si=document.getElementById('searchInput');if(si){si.value='';searchTerm='';si.setAttribute('autocomplete','off');}
+    // Limpa novamente após 500ms para vencer autofill do navegador
+    setTimeout(()=>{const s=document.getElementById('searchInput');if(s){s.value='';} searchTerm=''; renderProducts();},600);
+    // Também limpa quando a página volta do cache
+    window.addEventListener('pageshow',()=>{const s=document.getElementById('searchInput');if(s){s.value='';} searchTerm=''; renderProducts();});
     await loadProducts();
     cart=safeParse(LS_CART,[]);
     renderCategories();renderProducts();updateCartBadge();renderBackupInfo();updateDash();
